@@ -1,0 +1,117 @@
+@host = http://localhost:3000
+
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json
+
+{
+  "username": "user2",
+  "password": "12345678"
+}
+
+@myAccessToken = {{login.response.body.accessToken}}
+
+### Create Product Category Association
+# @name createProductCategory
+POST {{host}}/product-categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "productId": "product-uuid-123",
+  "categoryId": "category-uuid-456",
+  "status": "active"
+}
+
+@productCategoryId = {{createProductCategory.response.body.uuid}}
+
+### Get All Product Categories
+GET {{host}}/product-categories
+authorization: Bearer {{myAccessToken}}
+
+### Get All Product Categories with Filters
+GET {{host}}/product-categories?productId=product-uuid-123&status=active&page=1&limit=10
+authorization: Bearer {{myAccessToken}}
+
+### Get All Product Categories by Category
+GET {{host}}/product-categories?categoryId=category-uuid-456&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get All Product Categories Sorted by Created Date
+GET {{host}}/product-categories?sort=createdAt&order=DESC
+authorization: Bearer {{myAccessToken}}
+
+### Get Product Category By Id
+GET {{host}}/product-categories/{{productCategoryId}}
+authorization: Bearer {{myAccessToken}}
+
+### Get Product Categories By Product Id
+GET {{host}}/product-categories/product/product-uuid-123
+authorization: Bearer {{myAccessToken}}
+
+### Get Product Categories By Category Id
+GET {{host}}/product-categories/category/category-uuid-456
+authorization: Bearer {{myAccessToken}}
+
+### Get Product Category By Association
+GET {{host}}/product-categories/association/product-uuid-123/category-uuid-456
+authorization: Bearer {{myAccessToken}}
+
+### Update Product Category Status
+PUT {{host}}/product-categories/{{productCategoryId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "status": "inactive"
+}
+
+### Update Product Category Association
+PUT {{host}}/product-categories/{{productCategoryId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "productId": "product-uuid-789",
+  "categoryId": "category-uuid-101",
+  "status": "active"
+}
+
+### Create Another Product Category Association
+POST {{host}}/product-categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "productId": "product-uuid-456",
+  "categoryId": "category-uuid-789",
+  "status": "active"
+}
+
+### Get Product Categories with Status Filter
+GET {{host}}/product-categories?status=active&sort=createdAt&order=DESC&limit=20
+authorization: Bearer {{myAccessToken}}
+
+### Get Product Categories by Product with Status
+GET {{host}}/product-categories?productId=product-uuid-123&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get Product Categories by Category with Status
+GET {{host}}/product-categories?categoryId=category-uuid-456&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Delete Product Category
+DELETE {{host}}/product-categories/{{productCategoryId}}
+authorization: Bearer {{myAccessToken}}
+
+### Create Product Category with Duplicate Association (Should Fail)
+POST {{host}}/product-categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "productId": "product-uuid-123",
+  "categoryId": "category-uuid-456",
+  "status": "active"
+}
