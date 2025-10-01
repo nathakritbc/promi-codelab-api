@@ -14,6 +14,7 @@ import { ExpensesModule } from './expenses/expenses.module';
 import { HealthModule } from './health/health.module';
 import { ProductCategoriesModule } from './product-categories/productCategories.module';
 import { ProductsModule } from './products/products.module';
+import { PromotionApplicableCategoriesModule } from './promotion-applicable-categories/promotionApplicableCategories.module';
 import { PromotionApplicableProductsModule } from './promotion-applicable-products/promotionApplicableProducts.module';
 import { PromotionRulesModule } from './promotion-rules/promotionRules.module';
 import { PromotionsModule } from './promotions/promotions.module';
@@ -32,6 +33,7 @@ import { UserModule } from './users/user.module';
     HealthModule,
     ProductCategoriesModule,
     ProductsModule,
+    PromotionApplicableCategoriesModule,
     PromotionApplicableProductsModule,
     PromotionRulesModule,
     PromotionsModule,

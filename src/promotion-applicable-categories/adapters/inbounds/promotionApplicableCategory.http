@@ -1,0 +1,142 @@
+@host = http://localhost:3000
+
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json
+
+{
+  "username": "user2",
+  "password": "12345678"
+}
+
+@myAccessToken = {{login.response.body.accessToken}}
+
+### Create Promotion Applicable Category Association
+# @name createPromotionApplicableCategory
+POST {{host}}/promotion-applicable-categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "promotionId": "promotion-uuid-123",
+  "categoryId": "category-uuid-456",
+  "includeChildren": true,
+  "status": "active"
+}
+
+@promotionApplicableCategoryId = {{createPromotionApplicableCategory.response.body.uuid}}
+
+### Get All Promotion Applicable Categories
+GET {{host}}/promotion-applicable-categories
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotion Applicable Categories with Filters
+GET {{host}}/promotion-applicable-categories?promotionId=promotion-uuid-123&status=active&page=1&limit=10
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotion Applicable Categories by Category
+GET {{host}}/promotion-applicable-categories?categoryId=category-uuid-456&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotion Applicable Categories with Include Children Filter
+GET {{host}}/promotion-applicable-categories?includeChildren=true&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotion Applicable Categories Sorted by Created Date
+GET {{host}}/promotion-applicable-categories?sort=createdAt&order=DESC
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Category By Id
+GET {{host}}/promotion-applicable-categories/{{promotionApplicableCategoryId}}
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Categories By Promotion Id
+GET {{host}}/promotion-applicable-categories/promotion/promotion-uuid-123
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Categories By Category Id
+GET {{host}}/promotion-applicable-categories/category/category-uuid-456
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Category By Association
+GET {{host}}/promotion-applicable-categories/association/promotion-uuid-123/category-uuid-456
+authorization: Bearer {{myAccessToken}}
+
+### Update Promotion Applicable Category Status
+PUT {{host}}/promotion-applicable-categories/{{promotionApplicableCategoryId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "status": "inactive"
+}
+
+### Update Promotion Applicable Category Include Children
+PUT {{host}}/promotion-applicable-categories/{{promotionApplicableCategoryId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "includeChildren": false
+}
+
+### Update Promotion Applicable Category Association
+PUT {{host}}/promotion-applicable-categories/{{promotionApplicableCategoryId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "promotionId": "promotion-uuid-789",
+  "categoryId": "category-uuid-101",
+  "includeChildren": true,
+  "status": "active"
+}
+
+### Create Another Promotion Applicable Category Association
+POST {{host}}/promotion-applicable-categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "promotionId": "promotion-uuid-456",
+  "categoryId": "category-uuid-789",
+  "includeChildren": false,
+  "status": "active"
+}
+
+### Get Promotion Applicable Categories with Status Filter
+GET {{host}}/promotion-applicable-categories?status=active&sort=createdAt&order=DESC&limit=20
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Categories by Promotion with Status
+GET {{host}}/promotion-applicable-categories?promotionId=promotion-uuid-123&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Categories by Category with Status
+GET {{host}}/promotion-applicable-categories?categoryId=category-uuid-456&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Categories with Include Children Filter
+GET {{host}}/promotion-applicable-categories?includeChildren=true&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Categories with Exclude Children Filter
+GET {{host}}/promotion-applicable-categories?includeChildren=false&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Delete Promotion Applicable Category
+DELETE {{host}}/promotion-applicable-categories/{{promotionApplicableCategoryId}}
+authorization: Bearer {{myAccessToken}}
+
+### Create Promotion Applicable Category with Duplicate Association (Should Fail)
+POST {{host}}/promotion-applicable-categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "promotionId": "promotion-uuid-123",
+  "categoryId": "category-uuid-456",
+  "includeChildren": true,
+  "status": "active"
+}
