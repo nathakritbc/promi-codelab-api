@@ -1,0 +1,116 @@
+@host = http://localhost:3000
+
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json
+
+{
+  "username": "user2",
+  "password": "12345678"
+}
+
+@myAccessToken = {{login.response.body.accessToken}}
+
+### Create Root Category
+# @name createRootCategory
+POST {{host}}/categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "name": "Electronics",
+  "lft": 1,
+  "rgt": 2,
+  "status": "active"
+}
+
+@rootCategoryId = {{createRootCategory.response.body.uuid}}
+
+### Create Sub Category
+# @name createSubCategory
+POST {{host}}/categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "name": "Smartphones",
+  "parentId": "{{rootCategoryId}}",
+  "lft": 2,
+  "rgt": 3,
+  "status": "active"
+}
+
+@subCategoryId = {{createSubCategory.response.body.uuid}}
+
+### Get All Categories
+GET {{host}}/categories
+authorization: Bearer {{myAccessToken}}
+
+### Get All Categories with Filters
+GET {{host}}/categories?status=active&isRoot=true&page=1&limit=10
+authorization: Bearer {{myAccessToken}}
+
+### Get All Categories with Search
+GET {{host}}/categories?search=Electronics
+authorization: Bearer {{myAccessToken}}
+
+### Get All Categories Sorted by Name
+GET {{host}}/categories?sort=name&order=ASC
+authorization: Bearer {{myAccessToken}}
+
+### Get Category By Id
+GET {{host}}/categories/{{rootCategoryId}}
+authorization: Bearer {{myAccessToken}}
+
+### Get Categories By Parent Id
+GET {{host}}/categories/parent/{{rootCategoryId}}
+authorization: Bearer {{myAccessToken}}
+
+### Update Category
+PUT {{host}}/categories/{{rootCategoryId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "name": "Electronics & Gadgets",
+  "lft": 1,
+  "rgt": 4
+}
+
+### Update Category Status to Inactive
+PUT {{host}}/categories/{{subCategoryId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "status": "inactive"
+}
+
+### Delete Category
+DELETE {{host}}/categories/{{subCategoryId}}
+authorization: Bearer {{myAccessToken}}
+
+### Create Another Root Category
+POST {{host}}/categories
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "name": "Clothing",
+  "lft": 5,
+  "rgt": 6,
+  "status": "active"
+}
+
+### Get Categories with Nested Set Filters
+GET {{host}}/categories?sort=lft&order=ASC&limit=20
+authorization: Bearer {{myAccessToken}}
+
+### Get Root Categories Only
+GET {{host}}/categories?isRoot=true&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get Categories with Parent Filter
+GET {{host}}/categories?parentId={{rootCategoryId}}&status=active
+authorization: Bearer {{myAccessToken}}

@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ClsModule } from 'nestjs-cls';
 import { LoggerModule } from 'nestjs-pino';
 import { AuthModule } from './auth/auth.module';
+import { CategoriesModule } from './categories/categories.module';
 import { configModule } from './configs/app.config';
 import { httpConfig } from './configs/http.config';
 import { loggerConfig } from './configs/logger.config';
@@ -23,6 +24,7 @@ import { UserModule } from './users/user.module';
     HttpModule.register(httpConfig),
     LoggerModule.forRoot(loggerConfig),
     AuthModule,
+    CategoriesModule,
     DatabaseModule,
     ExpensesModule,
     HealthModule,
