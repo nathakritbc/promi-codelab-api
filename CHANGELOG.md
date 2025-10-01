@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.0.0 (2025-10-01)
+
+### Features
+
+* 🎸 Initial Project ([b5e03d3](https://github.com/nathakritbc/promi-codelab-api/commit/b5e03d3e436e41a22b3aba6087691dea67bb736b))
+
 ## [1.1.0](https://github.com/nathakritbc/promi-codelab-api/compare/v1.0.0...v1.1.0) (2025-09-02)
 
 ### Features
