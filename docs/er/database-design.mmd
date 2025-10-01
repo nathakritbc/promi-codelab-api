@@ -61,9 +61,10 @@ erDiagram
       int rgt
     }
 
+
     product_categories {
       uuid id PK
       uuid product_id FK
       uuid category_id FK
-      %% unique "(product_id, category_id) unique"
+      %% เพิ่ม index unique "(product_id, category_id) unique"
     }
