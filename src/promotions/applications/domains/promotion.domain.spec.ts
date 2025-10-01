@@ -20,10 +20,10 @@ describe('PromotionDomain', () => {
     const basePromotion = Builder<Promotion>()
       .uuid('test-uuid' as PromotionId)
       .name('Test Promotion' as PromotionName)
-      .status(EPromotionStatus.ACTIVE as unknown as PromotionStatus)
+      .status(EPromotionStatus.ACTIVE as PromotionStatus)
       .startsAt(new Date('2025-01-01') as PromotionStartsAt)
-      .endsAt(new Date('2025-12-31') as PromotionEndsAt)
-      .discountType(EDiscountType.PERCENT as unknown as DiscountType)
+      .endsAt(new Date('2025-01-31') as PromotionEndsAt)
+      .discountType(EDiscountType.PERCENT as DiscountType)
       .discountValue(10 as PromotionDiscountValue)
       .maxDiscountAmount(100 as PromotionMaxDiscountAmount)
       .priority(1 as PromotionPriority)
@@ -36,7 +36,7 @@ describe('PromotionDomain', () => {
     it('should return true when promotion is active and within date range', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.ACTIVE as unknown as PromotionStatus,
+        status: EPromotionStatus.ACTIVE as PromotionStatus,
         startsAt: new Date(Date.now() - 86400000) as PromotionStartsAt, // 1 day ago
         endsAt: new Date(Date.now() + 86400000) as PromotionEndsAt, // 1 day ahead
       });
@@ -45,20 +45,20 @@ describe('PromotionDomain', () => {
       const result = promotion.isActive();
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return false when promotion status is not active', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.DRAFT as unknown as PromotionStatus,
+        status: EPromotionStatus.DRAFT as PromotionStatus,
       });
 
       // Act
       const result = promotion.isActive();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return false when current date is before starts_at', () => {
@@ -72,7 +72,7 @@ describe('PromotionDomain', () => {
       const result = promotion.isActive();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return false when current date is after ends_at', () => {
@@ -86,7 +86,7 @@ describe('PromotionDomain', () => {
       const result = promotion.isActive();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
   });
 
@@ -94,7 +94,7 @@ describe('PromotionDomain', () => {
     it('should return 0 when promotion is not active', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.PAUSED as unknown as PromotionStatus,
+        status: EPromotionStatus.PAUSED as PromotionStatus,
       });
 
       // Act
@@ -107,10 +107,10 @@ describe('PromotionDomain', () => {
     it('should calculate fixed discount correctly', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.ACTIVE as unknown as PromotionStatus,
+        status: EPromotionStatus.ACTIVE as PromotionStatus,
         startsAt: new Date(Date.now() - 86400000) as PromotionStartsAt,
         endsAt: new Date(Date.now() + 86400000) as PromotionEndsAt,
-        discountType: EDiscountType.FIXED as unknown as DiscountType,
+        discountType: EDiscountType.FIXED as DiscountType,
         discountValue: 50 as PromotionDiscountValue,
       });
 
@@ -124,10 +124,10 @@ describe('PromotionDomain', () => {
     it('should not exceed amount when fixed discount is higher than amount', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.ACTIVE as unknown as PromotionStatus,
+        status: EPromotionStatus.ACTIVE as PromotionStatus,
         startsAt: new Date(Date.now() - 86400000) as PromotionStartsAt,
         endsAt: new Date(Date.now() + 86400000) as PromotionEndsAt,
-        discountType: EDiscountType.FIXED as unknown as DiscountType,
+        discountType: EDiscountType.FIXED as DiscountType,
         discountValue: 200 as PromotionDiscountValue,
       });
 
@@ -141,10 +141,10 @@ describe('PromotionDomain', () => {
     it('should calculate percent discount correctly', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.ACTIVE as unknown as PromotionStatus,
+        status: EPromotionStatus.ACTIVE as PromotionStatus,
         startsAt: new Date(Date.now() - 86400000) as PromotionStartsAt,
         endsAt: new Date(Date.now() + 86400000) as PromotionEndsAt,
-        discountType: EDiscountType.PERCENT as unknown as DiscountType,
+        discountType: EDiscountType.PERCENT as DiscountType,
         discountValue: 20 as PromotionDiscountValue,
         maxDiscountAmount: undefined,
       });
@@ -159,10 +159,10 @@ describe('PromotionDomain', () => {
     it('should apply max discount cap for percent discount', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.ACTIVE as unknown as PromotionStatus,
+        status: EPromotionStatus.ACTIVE as PromotionStatus,
         startsAt: new Date(Date.now() - 86400000) as PromotionStartsAt,
         endsAt: new Date(Date.now() + 86400000) as PromotionEndsAt,
-        discountType: EDiscountType.PERCENT as unknown as DiscountType,
+        discountType: EDiscountType.PERCENT as DiscountType,
         discountValue: 20 as PromotionDiscountValue,
         maxDiscountAmount: 100 as PromotionMaxDiscountAmount,
       });
@@ -177,10 +177,10 @@ describe('PromotionDomain', () => {
     it('should not apply max discount cap when discount is below cap', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.ACTIVE as unknown as PromotionStatus,
+        status: EPromotionStatus.ACTIVE as PromotionStatus,
         startsAt: new Date(Date.now() - 86400000) as PromotionStartsAt,
         endsAt: new Date(Date.now() + 86400000) as PromotionEndsAt,
-        discountType: EDiscountType.PERCENT as unknown as DiscountType,
+        discountType: EDiscountType.PERCENT as DiscountType,
         discountValue: 10 as PromotionDiscountValue,
         maxDiscountAmount: 200 as PromotionMaxDiscountAmount,
       });
@@ -197,53 +197,53 @@ describe('PromotionDomain', () => {
     it('should return true when promotion is in draft status', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.DRAFT as unknown as PromotionStatus,
+        status: EPromotionStatus.DRAFT as PromotionStatus,
       });
 
       // Act
       const result = promotion.canBeModified();
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return true when promotion is in active status', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.ACTIVE as unknown as PromotionStatus,
+        status: EPromotionStatus.ACTIVE as PromotionStatus,
       });
 
       // Act
       const result = promotion.canBeModified();
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return true when promotion is in paused status', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.PAUSED as unknown as PromotionStatus,
+        status: EPromotionStatus.PAUSED as PromotionStatus,
       });
 
       // Act
       const result = promotion.canBeModified();
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return false when promotion is in ended status', () => {
       // Arrange
       const promotion = createTestPromotion({
-        status: EPromotionStatus.ENDED as unknown as PromotionStatus,
+        status: EPromotionStatus.ENDED as PromotionStatus,
       });
 
       // Act
       const result = promotion.canBeModified();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
   });
 });

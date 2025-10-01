@@ -1,4 +1,10 @@
+import dayjs from 'dayjs';
 import type { Brand, CreatedAt, UpdatedAt } from 'src/types/utility.type';
+
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 // Branded types for type safety
 export type PromotionId = Brand<string, 'PromotionId'>;
@@ -56,20 +62,18 @@ export class Promotion implements IPromotion {
 
   // Business logic methods
   isActive(): boolean {
-    const now = new Date();
-    return (
-      this.status === (EPromotionStatus.ACTIVE as unknown as PromotionStatus) &&
-      new Date(this.startsAt) <= now &&
-      new Date(this.endsAt) >= now
-    );
+    const now = dayjs();
+    const isStatusActive = this.status === EPromotionStatus.ACTIVE;
+    const hasStarted = dayjs(this.startsAt).isSameOrBefore(now);
+    const hasNotEnded = dayjs(this.endsAt).isSameOrAfter(now);
+
+    return isStatusActive && hasStarted && hasNotEnded;
   }
 
   calculateDiscount(amount: number): number {
-    if (!this.isActive()) {
-      return 0;
-    }
+    if (!this.isActive()) return 0;
 
-    if (this.discountType === (EDiscountType.FIXED as unknown as DiscountType)) {
+    if (this.discountType === EDiscountType.FIXED) {
       return Math.min(this.discountValue, amount);
     }
 
@@ -83,6 +87,6 @@ export class Promotion implements IPromotion {
   }
 
   canBeModified(): boolean {
-    return this.status !== (EPromotionStatus.ENDED as unknown as PromotionStatus);
+    return this.status !== EPromotionStatus.ENDED;
   }
 }
