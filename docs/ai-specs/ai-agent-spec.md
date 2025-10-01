@@ -344,6 +344,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 import { Injectable } from '@nestjs/common';
 import { Builder, StrictBuilder } from 'builder-pattern';
+import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import {
   I{Entity},
   {Entity},
@@ -412,35 +413,25 @@ export class {Entity}TypeOrmRepository implements {Entity}Repository {
       qb.andWhere('{entity}.date <= :endDate', { endDate: new Date(endDate) });
     }
 
-    // Sorting (safe whitelist)
+    // Sorting and pagination
     const sortableColumns = ['title', 'amount', 'date', 'category', 'createdAt'];
-    if (sort && sortableColumns.includes(sort)) {
-      qb.orderBy(`{entity}.${sort}`, order === 'ASC' ? 'ASC' : 'DESC');
+    const isValidSort = sort && sortableColumns.includes(sort);
+    const sortOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
+    if (isValidSort) {
+      qb.orderBy(`{entity}.${sort}`, sortOrder);
     } else {
-      qb.orderBy('{entity}.date', 'DESC'); // default
+      qb.orderBy('{entity}.date', 'DESC');
     }
 
-    // Pagination (support -1 = all)
-    if (currentLimit !== -1) {
-      qb.skip((currentPage - 1) * currentLimit).take(currentLimit);
-    }
+    const paginationParams = StrictBuilder<PaginationParams>().page(page).limit(limit).build();
 
-    // Execute query
-    const [{entity}s, count] = await qb.getManyAndCount();
+    const { records: {entity}s, meta } = await paginateQueryBuilder(qb, paginationParams);
 
     // Map to domain objects
     const result = {entity}s.map(({entity}) => {Entity}TypeOrmRepository.toDomain({entity}));
 
-    // Meta info
-    const totalPages = currentLimit === -1 ? 1 : Math.ceil(count / currentLimit);
-    const meta = StrictBuilder<GetAllMetaType>()
-      .page(currentPage)
-      .limit(currentLimit)
-      .total(count)
-      .totalPages(totalPages)
-      .build();
-
-    return StrictBuilder<GetAll{entity}sReturnType>().result(result).meta(meta).build();
+    return StrictBuilder<GetAll{Entity}sReturnType>().result(result).meta(meta).build();
   }
 
   async getById(id: {Entity}Id): Promise<I{Entity} | undefined> {
