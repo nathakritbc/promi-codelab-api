@@ -11,6 +11,7 @@ import { typeormRootConfig } from './configs/typeorm.config';
 import { DatabaseModule } from './databases/database.module';
 import { ExpensesModule } from './expenses/expenses.module';
 import { HealthModule } from './health/health.module';
+import { PromotionsModule } from './promotions/promotions.module';
 import { UserModule } from './users/user.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { UserModule } from './users/user.module';
     DatabaseModule,
     ExpensesModule,
     HealthModule,
+    PromotionsModule,
     UserModule,
   ],
   controllers: [],

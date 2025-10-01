@@ -1,0 +1,95 @@
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+###
+
+@myAccessToken = {{login.response.body.accessToken}}
+
+### Create Promotion
+POST {{host}}/promotions
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "name": "Summer Sale 2025",
+  "status": "draft",
+  "startsAt": "2025-06-01T00:00:00Z",
+  "endsAt": "2025-08-31T23:59:59Z",
+  "discountType": "Percent",
+  "discountValue": 20,
+  "maxDiscountAmount": 100,
+  "priority": 1
+}
+
+### Get All Promotions
+GET {{host}}/promotions
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotions with Filters
+GET {{host}}/promotions?status=active&discountType=Percent&page=1&limit=10
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotions with Search
+GET {{host}}/promotions?search=Summer
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion By Id
+GET {{host}}/promotions/{{promotionId}}
+authorization: Bearer {{myAccessToken}}
+
+### Update Promotion
+PUT {{host}}/promotions/{{promotionId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "name": "Summer Sale 2025 - Updated",
+  "status": "active",
+  "discountValue": 25,
+  "maxDiscountAmount": 150,
+  "priority": 2
+}
+
+### Update Promotion Status to Paused
+PUT {{host}}/promotions/{{promotionId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "status": "paused"
+}
+
+### Update Promotion Status to Ended
+PUT {{host}}/promotions/{{promotionId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "status": "ended"
+}
+
+### Delete Promotion
+DELETE {{host}}/promotions/{{promotionId}}
+authorization: Bearer {{myAccessToken}}
+
+### Create Fixed Discount Promotion
+POST {{host}}/promotions
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "name": "New Year Fixed Discount",
+  "status": "draft",
+  "startsAt": "2025-12-25T00:00:00Z",
+  "endsAt": "2026-01-07T23:59:59Z",
+  "discountType": "Fixed",
+  "discountValue": 50,
+  "priority": 5
+}
+
