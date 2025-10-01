@@ -2,8 +2,8 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 import { Injectable } from '@nestjs/common';
 import { Builder, StrictBuilder } from 'builder-pattern';
-import { GetAllMetaType } from 'src/types/utility.type';
 import { UserId } from 'src/users/applications/domains/user.domain';
+import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import { Expense, ExpenseAmount, ExpenseId, IExpense } from '../../applications/domains/expense.domain';
 import {
   ExpenseReportReturnType,
@@ -43,9 +43,6 @@ export class ExpenseTypeOrmRepository implements ExpenseRepository {
   async getAll(params: GetAllExpensesQuery): Promise<GetAllExpensesReturnType> {
     const { search, sort, order, page, limit, userId, category, startDate, endDate } = params;
 
-    const currentPage = page ?? 1;
-    const currentLimit = limit ?? 10;
-
     const repo = this.expenseModel.tx.getRepository(ExpenseEntity);
     const qb = repo.createQueryBuilder('expense');
 
@@ -68,37 +65,28 @@ export class ExpenseTypeOrmRepository implements ExpenseRepository {
     if (startDate) {
       qb.andWhere('expense.date >= :startDate', { startDate: new Date(startDate) });
     }
+
     if (endDate) {
       qb.andWhere('expense.date <= :endDate', { endDate: new Date(endDate) });
     }
 
     // Sorting (safe whitelist)
     const sortableColumns = ['title', 'amount', 'date', 'category', 'createdAt'];
-    if (sort && sortableColumns.includes(sort)) {
-      qb.orderBy(`expense.${sort}`, order === 'ASC' ? 'ASC' : 'DESC');
+    const isValidSort = sort && sortableColumns.includes(sort);
+    const sortOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
+    if (isValidSort) {
+      qb.orderBy(`expense.${sort}`, sortOrder);
     } else {
-      qb.orderBy('expense.date', 'DESC'); // default
+      qb.orderBy('expense.date', 'DESC');
     }
 
-    // Pagination (support -1 = all)
-    if (currentLimit !== -1) {
-      qb.skip((currentPage - 1) * currentLimit).take(currentLimit);
-    }
+    const paginationParams = StrictBuilder<PaginationParams>().page(page).limit(limit).build();
 
-    // Execute query
-    const [expenses, count] = await qb.getManyAndCount();
+    const { records: expenses, meta } = await paginateQueryBuilder(qb, paginationParams);
 
     // Map to domain objects
     const result = expenses.map((expense) => ExpenseTypeOrmRepository.toDomain(expense));
-
-    // Meta info
-    const totalPages = currentLimit === -1 ? 1 : Math.ceil(count / currentLimit);
-    const meta = StrictBuilder<GetAllMetaType>()
-      .page(currentPage)
-      .limit(currentLimit)
-      .total(count)
-      .totalPages(totalPages)
-      .build();
 
     return StrictBuilder<GetAllExpensesReturnType>().result(result).meta(meta).build();
   }

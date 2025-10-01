@@ -334,6 +334,7 @@ import type { I{Entity}, {Entity}Id } from '../domains/{Entity}.domain';
 import { {Entity}Repository } from '../ports/{Entity}.repository';
 import { GetAllMetaType, GetAllParamsType } from 'src/types/utility.type';
 import { {Entity}Entity } from './{Entity}.entity';
+import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 
 @Injectable()
 export class {Entity}TypeOrmRepository implements {Entity}Repository {
@@ -381,28 +382,23 @@ export class {Entity}TypeOrmRepository implements {Entity}Repository {
 
     // Sorting and pagination
     const sortableColumns = ['title', 'amount', 'date', 'category', 'createdAt'];
-    if (sort && sortableColumns.includes(sort)) {
-      qb.orderBy(`{entity}.${sort}`, order === 'ASC' ? 'ASC' : 'DESC');
+    const isValidSort = sort && sortableColumns.includes(sort);
+    const sortOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
+    if (isValidSort) {
+      qb.orderBy(`{entity}.${sort}`, sortOrder);
     } else {
       qb.orderBy('{entity}.date', 'DESC');
     }
 
-    if (currentLimit !== -1) {
-      qb.skip((currentPage - 1) * currentLimit).take(currentLimit);
-    }
+    const paginationParams = StrictBuilder<PaginationParams>().page(page).limit(limit).build();
 
-    const [{entity}s, count] = await qb.getManyAndCount();
+    const { records: {entity}s, meta } = await paginateQueryBuilder(qb, paginationParams);
+
+    // Map to domain objects
     const result = {entity}s.map(({entity}) => {Entity}TypeOrmRepository.toDomain({entity}));
 
-    const totalPages = currentLimit === -1 ? 1 : Math.ceil(count / currentLimit);
-    const meta = StrictBuilder<GetAllMetaType>()
-      .page(currentPage)
-      .limit(currentLimit)
-      .total(count)
-      .totalPages(totalPages)
-      .build();
-
-    return StrictBuilder<GetAll{entity}sReturnType>().result(result).meta(meta).build();
+    return StrictBuilder<GetAll{Entity}sReturnType>().result(result).meta(meta).build();
   }
 
   async updateById(id: {Entity}Id, {entity}: Partial<I{Entity}>): Promise<I{Entity}> {
