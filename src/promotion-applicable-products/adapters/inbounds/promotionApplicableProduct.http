@@ -1,0 +1,117 @@
+@host = http://localhost:3000
+
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json
+
+{
+  "username": "user2",
+  "password": "12345678"
+}
+
+@myAccessToken = {{login.response.body.accessToken}}
+
+### Create Promotion Applicable Product Association
+# @name createPromotionApplicableProduct
+POST {{host}}/promotion-applicable-products
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "promotionId": "promotion-uuid-123",
+  "productId": "product-uuid-456",
+  "status": "active"
+}
+
+@promotionApplicableProductId = {{createPromotionApplicableProduct.response.body.uuid}}
+
+### Get All Promotion Applicable Products
+GET {{host}}/promotion-applicable-products
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotion Applicable Products with Filters
+GET {{host}}/promotion-applicable-products?promotionId=promotion-uuid-123&status=active&page=1&limit=10
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotion Applicable Products by Product
+GET {{host}}/promotion-applicable-products?productId=product-uuid-456&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get All Promotion Applicable Products Sorted by Created Date
+GET {{host}}/promotion-applicable-products?sort=createdAt&order=DESC
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Product By Id
+GET {{host}}/promotion-applicable-products/{{promotionApplicableProductId}}
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Products By Promotion Id
+GET {{host}}/promotion-applicable-products/promotion/promotion-uuid-123
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Products By Product Id
+GET {{host}}/promotion-applicable-products/product/product-uuid-456
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Product By Association
+GET {{host}}/promotion-applicable-products/association/promotion-uuid-123/product-uuid-456
+authorization: Bearer {{myAccessToken}}
+
+### Update Promotion Applicable Product Status
+PUT {{host}}/promotion-applicable-products/{{promotionApplicableProductId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "status": "inactive"
+}
+
+### Update Promotion Applicable Product Association
+PUT {{host}}/promotion-applicable-products/{{promotionApplicableProductId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "promotionId": "promotion-uuid-789",
+  "productId": "product-uuid-101",
+  "status": "active"
+}
+
+### Create Another Promotion Applicable Product Association
+POST {{host}}/promotion-applicable-products
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "promotionId": "promotion-uuid-456",
+  "productId": "product-uuid-789",
+  "status": "active"
+}
+
+### Get Promotion Applicable Products with Status Filter
+GET {{host}}/promotion-applicable-products?status=active&sort=createdAt&order=DESC&limit=20
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Products by Promotion with Status
+GET {{host}}/promotion-applicable-products?promotionId=promotion-uuid-123&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get Promotion Applicable Products by Product with Status
+GET {{host}}/promotion-applicable-products?productId=product-uuid-456&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Delete Promotion Applicable Product
+DELETE {{host}}/promotion-applicable-products/{{promotionApplicableProductId}}
+authorization: Bearer {{myAccessToken}}
+
+### Create Promotion Applicable Product with Duplicate Association (Should Fail)
+POST {{host}}/promotion-applicable-products
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "promotionId": "promotion-uuid-123",
+  "productId": "product-uuid-456",
+  "status": "active"
+}
