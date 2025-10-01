@@ -21,6 +21,10 @@ This template provides a standardized approach for creating new modules within t
 - [ ] **Phase 5**: Create database adapters (TypeORM)
 - [ ] **Phase 6**: Build API controllers (inbound adapters)
 - [ ] **Phase 7**: Configure module and run tests
+- [ ] **Phase 8**: ⚠️ **CRITICAL** - Create migration with indexes (DON'T RUN YET!)
+- [ ] **Phase 9**: ⚠️ **MANDATORY** - Index optimization review (see `ai-index-optimization-spec.md`)
+- [ ] **Phase 10**: Update migration with optimized indexes
+- [ ] **Phase 11**: Run migration and verify
 
 ## 🏗️ Module Structure
 
@@ -688,7 +692,7 @@ pnpm run db:status
 Example: 1756391900904-CreatePostsTable.ts
 ```
 
-### Migration Template Structure
+### Migration Template Structure (Index Optimized)
 ```typescript
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
@@ -704,6 +708,17 @@ export class Create{Entity}Table{timestamp} implements MigrationInterface {
             isPrimary: true,
             generationStrategy: 'uuid',
             default: 'gen_random_uuid()',
+          },
+          {
+            name: 'status',
+            type: 'varchar',
+            length: '50',
+            default: "'active'",
+          },
+          {
+            name: 'priority',
+            type: 'int',
+            default: 0,
           },
           // Add your columns here with proper types and constraints
           {
@@ -723,7 +738,27 @@ export class Create{Entity}Table{timestamp} implements MigrationInterface {
       true,
     );
 
-    // Create indexes for better performance
+    // ✅ OPTIMIZED INDEXES - Based on actual query patterns
+    
+    // Filter index for status column
+    await queryRunner.createIndex(
+      '{entity}s',
+      new TableIndex({
+        name: 'IDX_{Entity}_STATUS',
+        columnNames: ['status'],
+      }),
+    );
+
+    // Composite index for most common query: WHERE status ORDER BY priority
+    await queryRunner.createIndex(
+      '{entity}s',
+      new TableIndex({
+        name: 'IDX_{Entity}_STATUS_PRIORITY',
+        columnNames: ['status', 'priority'],  // ✅ Covers priority queries too!
+      }),
+    );
+
+    // Sorting index
     await queryRunner.createIndex(
       '{entity}s',
       new TableIndex({
@@ -731,11 +766,18 @@ export class Create{Entity}Table{timestamp} implements MigrationInterface {
         columnNames: ['createdAt'],
       }),
     );
+
+    // ❌ DON'T CREATE: IDX_{Entity}_PRIORITY
+    // Reason: Composite (status, priority) already covers priority queries
+    // This would be redundant!
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Drop indexes first
+    // Drop indexes first (in reverse order)
+    await queryRunner.dropIndex('{entity}s', 'IDX_{Entity}_STATUS');
+    await queryRunner.dropIndex('{entity}s', 'IDX_{Entity}_STATUS_PRIORITY');
     await queryRunner.dropIndex('{entity}s', 'IDX_{Entity}_CREATED_AT');
+    // Note: No need to drop IDX_{Entity}_PRIORITY (never created)
 
     // Drop table
     await queryRunner.dropTable('{entity}s');
@@ -751,7 +793,198 @@ export class Create{Entity}Table{timestamp} implements MigrationInterface {
 5. **Test migrations** in development before applying to production
 6. **Use meaningful names** for indexes and foreign keys
 
-> **📋 For comprehensive migration guidelines**: See `docs/ai-specs/ai-migration-spec.md`
+### ⚠️ Index Optimization Workflow (CRITICAL STEPS)
+
+**MANDATORY: Review indexes BEFORE running migration:**
+
+#### Phase 8: Create Migration (DON'T RUN YET!)
+```bash
+# Create migration file
+pnpm run migration:create -- src/databases/migrations/Create{Entity}Table
+
+# Add table and indexes to migration file
+# DON'T run migration yet!
+```
+
+#### Phase 9: Index Optimization Review (MANDATORY)
+**Follow `ai-index-optimization-spec.md` guidelines:**
+
+1. **Analyze Query Patterns**
+   - Review repository implementation for common queries
+   - Identify WHERE, ORDER BY, JOIN patterns
+   - Document expected query frequency
+
+2. **Check for Composite Coverage**
+   - If you have composite index `(A, B)` → DON'T create index `(A)`
+   - Composite leading column covers single-column queries
+   - **Example:** `(status, priority)` covers `WHERE status = '...'` queries
+
+3. **Identify Redundant Indexes**
+   ```typescript
+   // ❌ REDUNDANT PATTERN:
+   await queryRunner.createIndex('table', { columnNames: ['column_a'] });
+   await queryRunner.createIndex('table', { columnNames: ['column_a', 'column_b'] });
+   
+   // ✅ OPTIMIZED:
+   await queryRunner.createIndex('table', { columnNames: ['column_a', 'column_b'] });
+   // Composite covers both queries!
+   ```
+
+4. **Apply Optimization Rules**
+   - Remove redundant single-column indexes
+   - Keep composite indexes that cover multiple patterns
+   - Aim for 3-6 strategic indexes per table
+   - Document each decision with comments
+
+#### Phase 10: Update Migration File
+```typescript
+// Update migration with optimized indexes
+// Add comments explaining optimization decisions
+// Remove redundant index creation code
+```
+
+#### Phase 11: Run Migration
+```bash
+# Only after optimization is complete
+pnpm run migration:run
+```
+
+> **📋 For comprehensive index guidelines**: See `docs/ai-specs/ai-index-optimization-spec.md`
+> **📋 For migration guidelines**: See `docs/ai-specs/ai-migration-spec.md`
+
+---
+
+## 🎯 Index Optimization Workflow (Phases 8-11)
+
+### Phase 8: Create Migration (DON'T RUN YET!)
+
+```bash
+# Create migration file
+pnpm run migration:create -- src/databases/migrations/Create{Entity}Table
+
+# Add table and indexes to migration file
+# DON'T run migration yet!
+```
+
+### Phase 9: Index Optimization Review (MANDATORY)
+
+**Follow `ai-index-optimization-spec.md` guidelines:**
+
+#### Step 1: Analyze Query Patterns
+
+Review repository implementation for common queries:
+
+```typescript
+// From repository implementation:
+async getAll(params) {
+  const qb = repo.createQueryBuilder('entity');
+  
+  // Pattern 1: Filter by status
+  if (status) {
+    qb.andWhere('entity.status = :status', { status });
+  }
+  
+  // Pattern 2: Default sort
+  qb.orderBy('entity.priority', 'DESC')
+    .addOrderBy('entity.created_at', 'DESC');
+    
+  return qb.getMany();
+}
+```
+
+**Identified Patterns:**
+- ✅ `WHERE status = '...'` → Need index on `status`
+- ✅ `ORDER BY priority DESC, created_at DESC` → Need index on `(priority)` or composite
+- ✅ Combined: `WHERE status ORDER BY priority` → Composite `(status, priority)` perfect!
+
+#### Step 2: Review Created Indexes
+
+List all indexes from migration:
+
+```typescript
+// From your migration:
+✅ IDX_TABLE_STATUS
+✅ IDX_TABLE_PRIORITY
+✅ IDX_TABLE_STATUS_PRIORITY
+✅ IDX_TABLE_CREATED_AT
+```
+
+#### Step 3: Check Redundancy
+
+Apply redundancy rules from `ai-index-optimization-spec.md`:
+
+**Rule 1: Composite Covers Leading Column**
+```typescript
+Have: IDX_TABLE_STATUS_PRIORITY (status, priority)
+Check: IDX_TABLE_PRIORITY ❌ REDUNDANT!
+Reason: Queries on 'priority' can use composite index
+
+Have: IDX_TABLE_STATUS_PRIORITY (status, priority)  
+Check: IDX_TABLE_STATUS ✅ NEEDED
+Reason: Composite doesn't cover 'status' alone efficiently... wait, it does!
+       But we keep it for queries that ONLY filter by status (common pattern)
+```
+
+**Decision Matrix:**
+| Index | Redundant? | Action | Reason |
+|-------|-----------|--------|--------|
+| `(status)` | ⚠️ Maybe | Keep if filtered alone often | Common filter |
+| `(priority)` | ❌ YES | Remove | Covered by composite |
+| `(status, priority)` | ✅ Keep | Core index | Most used pattern |
+| `(created_at)` | ✅ Keep | Needed | Sorting |
+
+### Phase 10: Update Migration File
+
+**Update original migration to remove redundant indexes:**
+
+```typescript
+// ❌ DON'T CREATE: IDX_{Entity}_PRIORITY
+// Reason: Composite (status, priority) already covers priority queries
+// This would be redundant!
+
+// ✅ OPTIMIZED INDEXES - Following ai-index-optimization-spec.md
+await queryRunner.createIndex('{entity}s', new TableIndex({
+  name: 'IDX_{Entity}_STATUS',
+  columnNames: ['status'],
+}));
+
+await queryRunner.createIndex('{entity}s', new TableIndex({
+  name: 'IDX_{Entity}_STATUS_PRIORITY',
+  columnNames: ['status', 'priority'],  // Covers status queries too!
+}));
+
+await queryRunner.createIndex('{entity}s', new TableIndex({
+  name: 'IDX_{Entity}_CREATED_AT',
+  columnNames: ['created_at'],
+}));
+```
+
+### Phase 11: Run Migration and Verify
+
+```bash
+# Only after optimization is complete
+pnpm run migration:run
+
+# Verify tests still pass
+pnpm test {module}
+
+# Build and verify
+pnpm run build
+```
+
+### Real Examples from Project:
+
+#### Example 1: Promotions
+- **Found:** `IDX_PROMOTIONS_PRIORITY` redundant
+- **Action:** Created `DropRedundantPromotionsPriorityIndex1759313081726.ts`
+- **Result:** 7 → 6 indexes (14% improvement)
+
+#### Example 2: Promotion Rules
+- **Found:** `IDX_PROMOTION_RULES_PROMOTION_ID` redundant
+- **Action:** Created `DropRedundantPromotionRulesPromotionIdIndex1759318853436.ts`
+- **Result:** 4 → 3 indexes (25% improvement)
+
+---
 
 ## 🧪 Testing Strategy
 
@@ -847,6 +1080,21 @@ authorization: Bearer {{myAccessToken}}
 - [ ] Indexes added for performance
 - [ ] Rollback methods safe
 
+### ⚠️ Index Optimization (MANDATORY - BEFORE MIGRATION)
+- [ ] **Phase 8**: Create migration with indexes (DON'T RUN YET!)
+- [ ] **Phase 9**: Review index redundancy using `ai-index-optimization-spec.md`
+- [ ] **Phase 10**: Update migration file to remove redundant indexes
+- [ ] **Phase 11**: Run migration with optimized indexes
+- [ ] **No redundant single-column indexes** - Composite leading columns cover them
+- [ ] **Optimal index count** - Aim for 3-6 strategic indexes per table
+- [ ] **Document each index** - Comment why each index is needed
+- [ ] **Performance verified** - Use EXPLAIN ANALYZE if possible
+- [ ] **Foreign keys indexed** - Either single or composite with FK as leading column
+- [ ] **Common patterns:**
+  - ❌ Don't create `(A)` if you have `(A, B)` composite
+  - ✅ Do create `(B)` even if you have `(A, B)` (trailing not covered)
+  - ✅ Composite index count should be > single-column count for optimization
+
 ## 🚀 Module Registration
 
 Add to `app.module.ts`:
@@ -881,6 +1129,41 @@ export class AppModule {}
 - Sanitize output data
 - Use JWT authentication guards
 
+### Index Optimization (New Modules)
+- **Always review indexes** after creating migration
+- **Check redundancy** using `ai-index-optimization-spec.md`
+- **Remove redundant indexes** via cleanup migration
+- **Document decisions** in migration comments
+- **Target:** 3-6 strategic indexes per table
+
 ---
 
-**🎯 Remember**: This template ensures consistency across all modules while maintaining hexagonal architecture principles. Adapt patterns to fit your specific domain requirements while keeping the core structure intact.
+## 🎓 Index Optimization Examples
+
+### Example: Promotions Module
+```typescript
+// Initial migration created 7 indexes
+// After review: Found IDX_PROMOTIONS_PRIORITY redundant
+// Action: Created DropRedundantPromotionsPriorityIndex migration
+// Result: 7 → 6 indexes (14% improvement)
+```
+
+### Example: Promotion Rules Module
+```typescript
+// Initial migration created 4 indexes
+// After review: Found IDX_PROMOTION_RULES_PROMOTION_ID redundant
+// Action: Created DropRedundantPromotionRulesPromotionIdIndex migration
+// Result: 4 → 3 indexes (25% improvement)
+```
+
+### Common Redundancy Pattern:
+```diff
+- IDX_TABLE_COLUMN_A              ❌ Remove (redundant)
++ IDX_TABLE_COLUMN_B              ✅ Keep (needed)
++ IDX_TABLE_A_B                   ✅ Keep (composite covers A)
++ IDX_TABLE_CREATED_AT            ✅ Keep (sorting)
+```
+
+---
+
+**🎯 Remember**: This template ensures consistency across all modules while maintaining hexagonal architecture principles. **ALWAYS perform index optimization (Phase 8)** before considering module complete. Adapt patterns to fit your specific domain requirements while keeping the core structure intact.

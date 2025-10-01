@@ -136,6 +136,11 @@ Use the prettier-plugin-organize-imports to automatically organize imports:
 - **Migration Naming**: Use timestamp-based naming (e.g., `1756391900904-CreatePostsTable.ts`)
 - **Column Types**: Always specify proper types with constraints (`varchar(length)`, `text`, `decimal(precision, scale)`)
 - **Indexes**: Create indexes for foreign keys, search fields, and frequently queried columns
+- **Index Optimization**: ⚠️ **CRITICAL** - Always check for redundant indexes! See `docs/ai-specs/ai-index-optimization-spec.md`
+  - ✅ Composite index `(A, B)` covers queries on `A` alone - don't create separate index on `A`
+  - ✅ Aim for 3-6 strategic indexes per table
+  - ❌ Remove redundant single-column indexes when composite exists
+  - 📋 Review index redundancy before finalizing migration
 - **Constraints**: Use proper `isNullable`, `isUnique`, and `default` values
 - **Rollback**: Implement proper rollback logic in migration `down()` method
 
@@ -197,6 +202,18 @@ Use the prettier-plugin-organize-imports to automatically organize imports:
 8. Update Swagger documentation
 9. Add integration/E2E tests
 10. Update module configurations
+11. ⚠️ **Index Optimization** (MANDATORY - BEFORE MIGRATION):
+    - **Create migration file** with initial indexes (DON'T RUN YET!)
+    - **Review indexes** using `ai-index-optimization-spec.md` guidelines
+    - **Check for redundancy**:
+      - Composite index `(A, B)` covers queries on `A` alone
+      - Remove redundant single-column indexes
+      - Apply optimization rules from spec
+    - **Update migration file** to remove redundant indexes
+    - **Add optimization comments** explaining decisions
+    - **Only then run migration** with optimized indexes
+    - **Verify tests still pass** after optimization
+    - **Reference:** `docs/ai-specs/ai-index-optimization-spec.md`
 
 ### Code Quality Checks
 - Run `pnpm lint` for linting
@@ -221,6 +238,16 @@ Use the prettier-plugin-organize-imports to automatically organize imports:
 - **Migration Naming**: Follow timestamp-based naming convention (e.g., `1756391900904-CreatePostsTable.ts`)
 - **Column Constraints**: Always specify proper types, lengths, and constraints
 - **Performance**: Add appropriate indexes for query optimization
+- **Index Optimization**: ⚠️ **CRITICAL MANDATORY STEP** - Before running migration, ALWAYS perform index optimization review:
+  1. **Create migration with initial indexes** (don't run yet!)
+  2. **Review indexes using `ai-index-optimization-spec.md`**:
+     - Check for composite index coverage of single-column indexes
+     - Identify redundant indexes before creation
+     - Apply optimization rules from the spec
+  3. **Update migration file** to remove redundant indexes
+  4. **Add optimization comments** explaining why indexes were removed
+  5. **Only then run migration** with optimized indexes
+  6. **Example:** If you have `(status, priority)` composite, don't create separate `(priority)` index
 - **Rollback Safety**: Ensure `down()` method properly reverses all changes
 
 ## Common Patterns & Examples
