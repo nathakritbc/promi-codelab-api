@@ -1,0 +1,91 @@
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+###
+
+@myAccessToken = {{login.response.body.accessToken}}
+
+### Create Product 
+POST {{host}}/products
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "code": "PROD-001",
+  "name": "Wireless Mouse",
+  "description": "High-quality wireless mouse with ergonomic design",
+  "price": 299,
+  "status": "active"
+}
+
+
+### Get All Products
+GET {{host}}/products
+authorization: Bearer {{myAccessToken}}
+
+### Get All Products with Filters
+GET {{host}}/products?status=active&minPrice=100&maxPrice=1000&page=1&limit=10
+authorization: Bearer {{myAccessToken}}
+
+### Get All Products with Search
+GET {{host}}/products?search=Mouse
+authorization: Bearer {{myAccessToken}}
+
+### Get All Products Sorted by Price
+GET {{host}}/products?sort=price&order=ASC
+authorization: Bearer {{myAccessToken}}
+
+### Get Product By Id
+GET {{host}}/products/{{productId}}
+authorization: Bearer {{myAccessToken}}
+
+### Update Product
+PUT {{host}}/products/{{productId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "name": "Wireless Mouse - Updated",
+  "price": 399,
+  "description": "Premium wireless mouse with RGB lighting"
+}
+
+### Update Product Status to Inactive
+PUT {{host}}/products/{{productId}}
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "status": "inactive"
+}
+
+### Delete Product
+DELETE {{host}}/products/{{productId}}
+authorization: Bearer {{myAccessToken}}
+
+### Create Another Product
+POST {{host}}/products
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "code": "PROD-002",
+  "name": "Mechanical Keyboard",
+  "description": "RGB mechanical keyboard with blue switches",
+  "price": 1299
+}
+
+### Get Products in Price Range
+GET {{host}}/products?minPrice=500&maxPrice=2000&status=active
+authorization: Bearer {{myAccessToken}}
+
+### Get All Products Sorted by Name
+GET {{host}}/products?sort=name&order=ASC&limit=20
+authorization: Bearer {{myAccessToken}}
+
