@@ -8,7 +8,16 @@ import type {
   CategoryUpdatedAt,
 } from 'src/categories/applications/domains/category.domain';
 import type { Status } from 'src/types/utility.type';
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export const CategoryTableName = 'categories';
 
@@ -26,6 +35,14 @@ export class CategoryEntity {
 
   @Column({ type: 'uuid', nullable: true, name: 'parent_id' })
   parentId?: CategoryParentId;
+
+  // Self-referencing Foreign Key Relationships
+  @ManyToOne(() => CategoryEntity, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'parent_id' })
+  parent?: CategoryEntity;
+
+  @OneToMany(() => CategoryEntity, (category) => category.parent)
+  children?: CategoryEntity[];
 
   @Column({ type: 'int' })
   lft: CategoryLft;
