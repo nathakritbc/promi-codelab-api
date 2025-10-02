@@ -5,7 +5,8 @@ import { Builder, StrictBuilder } from 'builder-pattern';
 import { isEmpty } from 'radash';
 import { ProductCategoryTypeOrmRepository } from 'src/product-categories/adapters/outbounds/productCategory.typeorm.repository';
 import type { ProductCategory } from 'src/product-categories/applications/domains/productCategory.domain';
-import type { Status } from 'src/types/utility.type';
+import { EStatus, type Status } from 'src/types/utility.type';
+import { Not } from 'typeorm';
 import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import type {
   IProduct,
@@ -31,7 +32,7 @@ export class ProductTypeOrmRepository implements ProductRepository {
   }
 
   async deleteProductById({ id }: { id: ProductId }): Promise<void> {
-    await this.productModel.tx.getRepository(ProductEntity).delete({ uuid: id });
+    await this.productModel.tx.getRepository(ProductEntity).update({ uuid: id }, { status: EStatus.DELETED });
   }
 
   async getAllProducts(params: GetAllProductsQuery): Promise<GetAllProductsReturnType> {
@@ -39,6 +40,8 @@ export class ProductTypeOrmRepository implements ProductRepository {
 
     const repo = this.productModel.tx.getRepository(ProductEntity);
     const qb = repo.createQueryBuilder('product');
+
+    qb.andWhere('product.status != :status', { status: EStatus.DELETED });
 
     // Apply filters
     if (search) {
@@ -85,7 +88,7 @@ export class ProductTypeOrmRepository implements ProductRepository {
 
   async getProductById({ id }: { id: ProductId }): Promise<IProduct | undefined> {
     const product = await this.productModel.tx.getRepository(ProductEntity).findOne({
-      where: { uuid: id },
+      where: { uuid: id, status: Not(EStatus.DELETED as Status) },
       relations: ['product_categories'],
     });
 
@@ -96,7 +99,7 @@ export class ProductTypeOrmRepository implements ProductRepository {
 
   async getProductByCode({ code }: { code: string }): Promise<IProduct | undefined> {
     const product = await this.productModel.tx.getRepository(ProductEntity).findOne({
-      where: { code: code as ProductCode },
+      where: { code: code as ProductCode, status: Not(EStatus.DELETED as Status) },
     });
 
     if (!product) return undefined;

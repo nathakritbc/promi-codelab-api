@@ -17,7 +17,7 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "code": "PROD-003",
+  "code": "PROD-009",
   "name": "Wireless Mouse",
   "description": "High-quality wireless mouse with ergonomic design",
   "price": 299,
@@ -42,11 +42,11 @@ GET {{host}}/products?sort=price&order=ASC
 authorization: Bearer {{myAccessToken}}
 
 ### Get Product By Id
-GET {{host}}/products/8ff53a77-7530-4eac-90c0-fc23b810bd26
+GET {{host}}/products/62184009-df53-45a8-bca7-e960f83df669
 authorization: Bearer {{myAccessToken}}
 
 ### Update Product
-PUT {{host}}/products/{{productId}}
+PUT {{host}}/products/62184009-df53-45a8-bca7-e960f83df669
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -57,7 +57,7 @@ authorization: Bearer {{myAccessToken}}
 }
 
 ### Update Product Status to Inactive
-PUT {{host}}/products/{{productId}}
+PUT {{host}}/products/62184009-df53-45a8-bca7-e960f83df669
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -66,7 +66,7 @@ authorization: Bearer {{myAccessToken}}
 }
 
 ### Delete Product
-DELETE {{host}}/products/{{productId}}
+DELETE {{host}}/products/62184009-df53-45a8-bca7-e960f83df669
 authorization: Bearer {{myAccessToken}}
 
 ### Create Another Product

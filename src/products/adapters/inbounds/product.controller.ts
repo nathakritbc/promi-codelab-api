@@ -29,7 +29,7 @@ import { GetProductByIdUseCase } from 'src/products/applications/usecases/getPro
 import { UpdateProductByIdUseCase } from 'src/products/applications/usecases/updateProductById.usecase';
 import { EStatus, type Status } from 'src/types/utility.type';
 import { CreateProductDto } from './dto/createProduct.dto';
-import type { UpdateProductDto } from './dto/updateProduct.dto';
+import { UpdateProductDto } from './dto/updateProduct.dto';
 
 @ApiTags('Products')
 @UseGuards(JwtAuthGuard)
