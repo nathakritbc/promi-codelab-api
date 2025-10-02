@@ -1,0 +1,17 @@
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+###
+
+@myAccessToken = {{login.response.body.accessToken}}  
+
+### Get Product By Id
+GET {{host}}/products/admin/8ff53a77-7530-4eac-90c0-fc23b810bd26
+authorization: Bearer {{myAccessToken}}
+ 

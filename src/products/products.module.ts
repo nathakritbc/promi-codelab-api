@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 // Controllers
+import { ProductAdminController } from './adapters/inbounds/product.admin.controller';
 import { ProductController } from './adapters/inbounds/product.controller';
 
 // Use Cases
@@ -15,7 +16,7 @@ import { ProductTypeOrmRepository } from './adapters/outbounds/product.typeorm.r
 import { productRepositoryToken } from './applications/ports/product.repository';
 
 @Module({
-  controllers: [ProductController],
+  controllers: [ProductAdminController, ProductController],
   providers: [
     // Use Cases
     CreateProductUseCase,

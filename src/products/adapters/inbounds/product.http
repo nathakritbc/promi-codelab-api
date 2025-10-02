@@ -17,7 +17,7 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "code": "PROD-001",
+  "code": "PROD-003",
   "name": "Wireless Mouse",
   "description": "High-quality wireless mouse with ergonomic design",
   "price": 299,
@@ -42,7 +42,7 @@ GET {{host}}/products?sort=price&order=ASC
 authorization: Bearer {{myAccessToken}}
 
 ### Get Product By Id
-GET {{host}}/products/{{productId}}
+GET {{host}}/products/8ff53a77-7530-4eac-90c0-fc23b810bd26
 authorization: Bearer {{myAccessToken}}
 
 ### Update Product
