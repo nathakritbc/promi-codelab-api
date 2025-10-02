@@ -7,7 +7,7 @@
   ],
   "rules": {
     "typescript/ban-ts-comment": "off",
-    "typescript/no-explicit-any": "off",
+    "typescript/no-explicit-any": "error",
     "typescript/no-empty-interface": "off",
     "typescript/no-unused-vars": "warn",
     "typescript/prefer-as-const": "warn",
