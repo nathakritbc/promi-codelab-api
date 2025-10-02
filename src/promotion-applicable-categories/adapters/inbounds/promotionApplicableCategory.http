@@ -1,14 +1,13 @@
-@host = http://localhost:3000
-
 ### Login
 # @name login
 POST {{host}}/auth/login
 content-type: application/json
 
 {
-  "username": "user2",
-  "password": "12345678"
+  "email": "john@example.com",
+  "password": "password123"
 }
+###
 
 @myAccessToken = {{login.response.body.accessToken}}
 
@@ -19,11 +18,13 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "promotionId": "promotion-uuid-123",
-  "categoryId": "category-uuid-456",
+  "promotionId": "0a1571d6-93f4-4afb-a190-8404bbc153d4",
+  "categoryId": "85225ca0-be3e-4037-93df-3130094ebeb7",
   "includeChildren": true,
   "status": "active"
 }
+
+###
 
 @promotionApplicableCategoryId = {{createPromotionApplicableCategory.response.body.uuid}}
 
@@ -32,11 +33,11 @@ GET {{host}}/promotion-applicable-categories
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Promotion Applicable Categories with Filters
-GET {{host}}/promotion-applicable-categories?promotionId=promotion-uuid-123&status=active&page=1&limit=10
+GET {{host}}/promotion-applicable-categories?promotionId=0a1571d6-93f4-4afb-a190-8404bbc153d4&status=active&page=1&limit=10
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Promotion Applicable Categories by Category
-GET {{host}}/promotion-applicable-categories?categoryId=category-uuid-456&status=active
+GET {{host}}/promotion-applicable-categories?categoryId=85225ca0-be3e-4037-93df-3130094ebeb7&status=active
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Promotion Applicable Categories with Include Children Filter
@@ -48,23 +49,23 @@ GET {{host}}/promotion-applicable-categories?sort=createdAt&order=DESC
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Applicable Category By Id
-GET {{host}}/promotion-applicable-categories/{{promotionApplicableCategoryId}}
+GET {{host}}/promotion-applicable-categories/c5c0e104-1dde-45f5-a971-7037fdca0610
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Applicable Categories By Promotion Id
-GET {{host}}/promotion-applicable-categories/promotion/promotion-uuid-123
+GET {{host}}/promotion-applicable-categories/promotion/0a1571d6-93f4-4afb-a190-8404bbc153d4
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Applicable Categories By Category Id
-GET {{host}}/promotion-applicable-categories/category/category-uuid-456
+GET {{host}}/promotion-applicable-categories/category/85225ca0-be3e-4037-93df-3130094ebeb7
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Applicable Category By Association
-GET {{host}}/promotion-applicable-categories/association/promotion-uuid-123/category-uuid-456
+GET {{host}}/promotion-applicable-categories/association/0a1571d6-93f4-4afb-a190-8404bbc153d4/85225ca0-be3e-4037-93df-3130094ebeb7
 authorization: Bearer {{myAccessToken}}
 
 ### Update Promotion Applicable Category Status
-PUT {{host}}/promotion-applicable-categories/{{promotionApplicableCategoryId}}
+PUT {{host}}/promotion-applicable-categories/c5c0e104-1dde-45f5-a971-7037fdca0610
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -73,7 +74,7 @@ authorization: Bearer {{myAccessToken}}
 }
 
 ### Update Promotion Applicable Category Include Children
-PUT {{host}}/promotion-applicable-categories/{{promotionApplicableCategoryId}}
+PUT {{host}}/promotion-applicable-categories/c5c0e104-1dde-45f5-a971-7037fdca0610
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -87,8 +88,8 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "promotionId": "promotion-uuid-789",
-  "categoryId": "category-uuid-101",
+  "promotionId": "0a1571d6-93f4-4afb-a190-8404bbc153d4",
+  "categoryId": "85225ca0-be3e-4037-93df-3130094ebeb7",
   "includeChildren": true,
   "status": "active"
 }
@@ -99,8 +100,8 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "promotionId": "promotion-uuid-456",
-  "categoryId": "category-uuid-789",
+  "promotionId": "0a1571d6-93f4-4afb-a190-8404bbc153d4",
+  "categoryId": "85225ca0-be3e-4037-93df-3130094ebeb7",
   "includeChildren": false,
   "status": "active"
 }
@@ -110,11 +111,11 @@ GET {{host}}/promotion-applicable-categories?status=active&sort=createdAt&order=
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Applicable Categories by Promotion with Status
-GET {{host}}/promotion-applicable-categories?promotionId=promotion-uuid-123&status=active
+GET {{host}}/promotion-applicable-categories?promotionId=0a1571d6-93f4-4afb-a190-8404bbc153d4&status=active
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Applicable Categories by Category with Status
-GET {{host}}/promotion-applicable-categories?categoryId=category-uuid-456&status=active
+GET {{host}}/promotion-applicable-categories?categoryId=85225ca0-be3e-4037-93df-3130094ebeb7&status=active
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Applicable Categories with Include Children Filter
@@ -135,8 +136,8 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "promotionId": "promotion-uuid-123",
-  "categoryId": "category-uuid-456",
+  "promotionId": "0a1571d6-93f4-4afb-a190-8404bbc153d4",
+  "categoryId": "85225ca0-be3e-4037-93df-3130094ebeb7",
   "includeChildren": true,
   "status": "active"
 }

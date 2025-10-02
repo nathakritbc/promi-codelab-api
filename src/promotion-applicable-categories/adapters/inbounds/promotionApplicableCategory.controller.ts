@@ -13,12 +13,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Builder } from 'builder-pattern';
+import { Builder, StrictBuilder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type {
   CategoryId,
   IPromotionApplicableCategory,
+  IncludeChildren,
   PromotionApplicableCategoryId,
+  PromotionApplicableCategoryUpdatedAt,
   PromotionId,
 } from 'src/promotion-applicable-categories/applications/domains/promotionApplicableCategory.domain';
 import { CreatePromotionApplicableCategoryUseCase } from 'src/promotion-applicable-categories/applications/usecases/createPromotionApplicableCategory.usecase';
@@ -31,7 +33,7 @@ import { GetPromotionApplicableCategoryByIdUseCase } from 'src/promotion-applica
 import { UpdatePromotionApplicableCategoryByIdUseCase } from 'src/promotion-applicable-categories/applications/usecases/updatePromotionApplicableCategoryById.usecase';
 import { EStatus, type Status } from 'src/types/utility.type';
 import { CreatePromotionApplicableCategoryDto } from './dto/createPromotionApplicableCategory.dto';
-import type { UpdatePromotionApplicableCategoryDto } from './dto/updatePromotionApplicableCategory.dto';
+import { UpdatePromotionApplicableCategoryDto } from './dto/updatePromotionApplicableCategory.dto';
 
 @ApiTags('Promotion Applicable Categories')
 @UseGuards(JwtAuthGuard)
@@ -173,14 +175,15 @@ export class PromotionApplicableCategoryController {
     @Param('id', ParseUUIDPipe) id: PromotionApplicableCategoryId,
     @Body() updatePromotionApplicableCategoryDto: UpdatePromotionApplicableCategoryDto,
   ): Promise<IPromotionApplicableCategory> {
-    const command = Builder<IPromotionApplicableCategory>()
+    const promotionApplicableCategory = StrictBuilder<IPromotionApplicableCategory>()
       .uuid(id)
       .promotionId(updatePromotionApplicableCategoryDto.promotionId as PromotionId)
       .categoryId(updatePromotionApplicableCategoryDto.categoryId as CategoryId)
-      .includeChildren(updatePromotionApplicableCategoryDto.includeChildren as any)
-      .status(updatePromotionApplicableCategoryDto.status as unknown as Status)
+      .includeChildren(updatePromotionApplicableCategoryDto.includeChildren as IncludeChildren)
+      .status(updatePromotionApplicableCategoryDto.status as Status)
+      .updatedAt(new Date() as PromotionApplicableCategoryUpdatedAt)
       .build();
-    return this.updatePromotionApplicableCategoryByIdUseCase.execute(command);
+    return this.updatePromotionApplicableCategoryByIdUseCase.execute(promotionApplicableCategory);
   }
 
   @ApiOperation({ summary: 'Delete a promotion applicable category' })
