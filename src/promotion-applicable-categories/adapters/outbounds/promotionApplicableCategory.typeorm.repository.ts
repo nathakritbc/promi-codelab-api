@@ -41,22 +41,12 @@ export class PromotionApplicableCategoryTypeOrmRepository implements PromotionAp
   async getAllPromotionApplicableCategories(
     params: GetAllPromotionApplicableCategoriesQuery,
   ): Promise<GetAllPromotionApplicableCategoriesReturnType> {
-    const { search, sort, order, page, limit, promotionId, categoryId, status, includeChildren } = params;
+    const { sort, order, page, limit, promotionId, categoryId, status, includeChildren } = params;
 
     const repo = this.promotionApplicableCategoryModel.tx.getRepository(PromotionApplicableCategoryEntity);
     const qb = repo.createQueryBuilder('promotionApplicableCategory');
 
     qb.andWhere('promotionApplicableCategory.status != :deleteStatus', { deleteStatus: EStatus.DELETED });
-
-    // Apply filters
-    if (search) {
-      qb.andWhere(
-        '(promotionApplicableCategory.promotionId ILIKE :search OR promotionApplicableCategory.categoryId ILIKE :search)',
-        {
-          search: `%${search}%`,
-        },
-      );
-    }
 
     // Apply filters
     if (promotionId) {

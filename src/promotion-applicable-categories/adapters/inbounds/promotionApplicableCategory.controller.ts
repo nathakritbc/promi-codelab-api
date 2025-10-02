@@ -74,7 +74,6 @@ export class PromotionApplicableCategoryController {
     status: HttpStatus.OK,
     description: 'The promotion applicable categories have been successfully retrieved.',
   })
-  @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'sort', required: false, type: String })
   @ApiQuery({ name: 'order', required: false, type: String, enum: ['ASC', 'DESC'] })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -86,7 +85,6 @@ export class PromotionApplicableCategoryController {
   @Get()
   @Transactional()
   getAll(
-    @Query('search') search?: string,
     @Query('sort') sort?: string,
     @Query('order') order?: string,
     @Query('page') page?: number,
@@ -97,7 +95,6 @@ export class PromotionApplicableCategoryController {
     @Query('includeChildren') includeChildren?: boolean,
   ) {
     return this.getAllPromotionApplicableCategoriesUseCase.execute({
-      search,
       sort,
       order,
       page,
