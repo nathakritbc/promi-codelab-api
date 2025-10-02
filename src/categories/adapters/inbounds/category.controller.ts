@@ -19,6 +19,7 @@ import type {
   CategoryId,
   CategoryName,
   CategoryParentId,
+  CategoryUpdatedAt,
   ICategory,
 } from 'src/categories/applications/domains/category.domain';
 import { CreateCategoryUseCase } from 'src/categories/applications/usecases/createCategory.usecase';
@@ -120,14 +121,15 @@ export class CategoryController {
   @Put(':id')
   @Transactional()
   update(@Param('id', ParseUUIDPipe) id: CategoryId, @Body() updateCategoryDto: UpdateCategoryDto): Promise<ICategory> {
-    const command = Builder<ICategory>()
+    const category = Builder<ICategory>()
       .uuid(id)
       .name(updateCategoryDto.name as CategoryName)
       .parentId(updateCategoryDto.parentId as CategoryParentId)
       .ancestors(updateCategoryDto.ancestors as string[])
       .status(updateCategoryDto.status as Status)
+      .updatedAt(new Date() as CategoryUpdatedAt)
       .build();
-    return this.updateCategoryByIdUseCase.execute(command);
+    return this.updateCategoryByIdUseCase.execute(category);
   }
 
   @ApiOperation({ summary: 'Delete a category' })
