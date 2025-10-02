@@ -13,7 +13,7 @@ This guide explains how to deploy the Catalog Promotions API using Docker and Do
 ### 1. Clone the Repository
 ```bash
 git clone <your-repository-url>
-cd promi_codelab_api
+cd promi-codelab-api
 ```
 
 ### 2. Set Up Environment Variables
