@@ -11,8 +11,8 @@ const config = {
   host: process.env.DB_HOST || 'postgres',
   port: parseInt(process.env.DB_PORT) || 5432,
   user: process.env.DB_USERNAME || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres123',
-  database: process.env.DB_DATABASE || 'expense_tracker',
+  password: process.env.DB_PASSWORD || '12345678',
+  database: process.env.DB_DATABASE || 'promi_codelab',
   connectionTimeoutMillis: 5000,
   query_timeout: 5000,
 };

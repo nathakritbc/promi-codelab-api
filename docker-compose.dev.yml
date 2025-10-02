@@ -1,13 +1,13 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: expense_tracker_db_dev
+    container_name: promi_codelab_db_dev
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-expense_tracker_dev}
+      POSTGRES_DB: ${DB_DATABASE:-promi_codelab_dev}
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres123}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
@@ -16,9 +16,9 @@ services:
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
     networks:
-      - expense_tracker_dev_network
+      - promi_codelab_dev_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d expense_tracker_dev"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d promi_codelab_dev"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,7 +28,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: expense_tracker_api_dev
+    container_name: promi_codelab_api_dev
     restart: unless-stopped
     environment:
       NODE_ENV: development
@@ -37,14 +37,14 @@ services:
       DB_PORT: ${DB_PORT:-5432}
       DB_USERNAME: ${DB_USERNAME:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres123}
-      DB_DATABASE: ${DB_DATABASE:-expense_tracker_dev}
+      DB_DATABASE: ${DB_DATABASE:-promi_codelab_dev}
       DB_DIALECT: postgres
       JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-key}
       DEFAULT_PASSWORD: ${DEFAULT_PASSWORD:-admin123}
       DEFAULT_TIME_ZONE: ${DEFAULT_TIME_ZONE:-Asia/Bangkok}
     ports:
       - "${PORT:-9009}:9009"
-      - "9229:9229"  # Debug port
+      - "9229:9229" # Debug port
     volumes:
       - ./src:/app/src
       - ./package.json:/app/package.json
@@ -59,7 +59,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - expense_tracker_dev_network
+      - promi_codelab_dev_network
     command: ["sh", "/app/init-dev.sh"]
 
 volumes:
@@ -67,5 +67,5 @@ volumes:
     driver: local
 
 networks:
-  expense_tracker_dev_network:
+  promi_codelab_dev_network:
     driver: bridge

@@ -22,9 +22,9 @@ END;
 $$ language 'plpgsql';
 
 -- Grant necessary permissions
-GRANT ALL PRIVILEGES ON DATABASE expense_tracker TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE promi_codelab TO postgres;
 
-GRANT ALL PRIVILEGES ON DATABASE expense_tracker_dev TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE promi_codelab_dev TO postgres;
 
 -- Log successful initialization
 DO $$

@@ -1,6 +1,6 @@
 # Docker Deployment Guide
 
-This guide explains how to deploy the Expense Tracker API using Docker and Docker Compose.
+This guide explains how to deploy the Catalog Promotions API using Docker and Docker Compose.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ This guide explains how to deploy the Expense Tracker API using Docker and Docke
 ### 1. Clone the Repository
 ```bash
 git clone <your-repository-url>
-cd expense_tracker_api
+cd promi_codelab_api
 ```
 
 ### 2. Set Up Environment Variables
@@ -84,7 +84,7 @@ The Docker setup includes the following services:
 
 ### PostgreSQL Database
 - **Port:** 5432
-- **Database:** expense_tracker (prod) / expense_tracker_dev (dev)
+- **Database:** promi_codelab (prod) / promi_codelab_dev (dev)
 - **Username:** postgres
 - **Password:** postgres123
 
@@ -144,7 +144,7 @@ docker-compose logs -f
 
 # Execute commands in containers
 docker-compose exec api pnpm run migration:run
-docker-compose exec postgres psql -U postgres -d expense_tracker
+docker-compose exec postgres psql -U postgres -d promi_codelab
 
 # Remove everything including volumes
 docker-compose down -v

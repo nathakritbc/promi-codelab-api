@@ -1,4 +1,4 @@
-# Makefile for Expense Tracker API Docker Deployment
+# Makefile for Catalog Promotions API Docker Deployment
 
 .PHONY: help dev prod stop status logs clean build test lint
 
