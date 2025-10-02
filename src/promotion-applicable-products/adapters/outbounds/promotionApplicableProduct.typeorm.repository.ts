@@ -2,7 +2,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 import { Injectable } from '@nestjs/common';
 import { Builder, StrictBuilder } from 'builder-pattern';
-import type { Status } from 'src/types/utility.type';
+import { EStatus, type Status } from 'src/types/utility.type';
 import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import type {
   IPromotionApplicableProduct,
@@ -43,6 +43,18 @@ export class PromotionApplicableProductTypeOrmRepository implements PromotionApp
 
     const repo = this.promotionApplicableProductModel.tx.getRepository(PromotionApplicableProductEntity);
     const qb = repo.createQueryBuilder('promotionApplicableProduct');
+
+    qb.andWhere('promotionApplicableProduct.status != :deleteStatus', { deleteStatus: EStatus.DELETED });
+
+    // Apply filters
+    if (search) {
+      qb.andWhere(
+        '(promotionApplicableProduct.productId ILIKE :search OR promotionApplicableProduct.promotionId ILIKE :search)',
+        {
+          search: `%${search}%`,
+        },
+      );
+    }
 
     // Apply filters
     if (promotionId) {
