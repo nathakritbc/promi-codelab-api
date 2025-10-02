@@ -55,15 +55,12 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
     }
 
     if (isRoot !== undefined) {
-      if (isRoot) {
-        qb.andWhere('category.parentId IS NULL');
-      } else {
-        qb.andWhere('category.parentId IS NOT NULL');
-      }
+      const condition = isRoot ? 'category.parentId IS NULL' : 'category.parentId IS NOT NULL';
+      qb.andWhere(condition);
     }
 
     // Sorting
-    const sortableColumns = ['name', 'lft', 'rgt', 'status', 'createdAt'];
+    const sortableColumns = ['name', 'status', 'createdAt'];
     const isValidSort = sort && sortableColumns.includes(sort);
     const sortOrder = order === 'ASC' ? 'ASC' : 'DESC';
 
@@ -74,7 +71,7 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
       const dbColumn = columnMap[sort] || sort;
       qb.orderBy(`category.${dbColumn}`, sortOrder);
     } else {
-      qb.orderBy('category.lft', 'ASC'); // Default: hierarchical order
+      qb.orderBy('category.name', 'ASC'); // Default: alphabetical order
     }
 
     const paginationParams = StrictBuilder<PaginationParams>().page(page).limit(limit).build();
