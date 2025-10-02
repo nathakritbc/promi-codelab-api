@@ -39,22 +39,12 @@ export class PromotionApplicableProductTypeOrmRepository implements PromotionApp
   async getAllPromotionApplicableProducts(
     params: GetAllPromotionApplicableProductsQuery,
   ): Promise<GetAllPromotionApplicableProductsReturnType> {
-    const { search, sort, order, page, limit, promotionId, productId, status } = params;
+    const { sort, order, page, limit, promotionId, productId, status } = params;
 
     const repo = this.promotionApplicableProductModel.tx.getRepository(PromotionApplicableProductEntity);
     const qb = repo.createQueryBuilder('promotionApplicableProduct');
 
     qb.andWhere('promotionApplicableProduct.status != :deleteStatus', { deleteStatus: EStatus.DELETED });
-
-    // Apply filters
-    if (search) {
-      qb.andWhere(
-        '(promotionApplicableProduct.productId ILIKE :search OR promotionApplicableProduct.promotionId ILIKE :search)',
-        {
-          search: `%${search}%`,
-        },
-      );
-    }
 
     // Apply filters
     if (promotionId) {

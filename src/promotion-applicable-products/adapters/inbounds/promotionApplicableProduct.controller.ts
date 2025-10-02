@@ -13,12 +13,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Builder } from 'builder-pattern';
+import { Builder, StrictBuilder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type {
   IPromotionApplicableProduct,
   ProductId,
   PromotionApplicableProductId,
+  PromotionApplicableProductUpdatedAt,
   PromotionId,
 } from 'src/promotion-applicable-products/applications/domains/promotionApplicableProduct.domain';
 import { CreatePromotionApplicableProductUseCase } from 'src/promotion-applicable-products/applications/usecases/createPromotionApplicableProduct.usecase';
@@ -31,7 +32,7 @@ import { GetPromotionApplicableProductsByPromotionIdUseCase } from 'src/promotio
 import { UpdatePromotionApplicableProductByIdUseCase } from 'src/promotion-applicable-products/applications/usecases/updatePromotionApplicableProductById.usecase';
 import { EStatus, type Status } from 'src/types/utility.type';
 import { CreatePromotionApplicableProductDto } from './dto/createPromotionApplicableProduct.dto';
-import type { UpdatePromotionApplicableProductDto } from './dto/updatePromotionApplicableProduct.dto';
+import { UpdatePromotionApplicableProductDto } from './dto/updatePromotionApplicableProduct.dto';
 
 @ApiTags('Promotion Applicable Products')
 @UseGuards(JwtAuthGuard)
@@ -71,7 +72,6 @@ export class PromotionApplicableProductController {
     status: HttpStatus.OK,
     description: 'The promotion applicable products have been successfully retrieved.',
   })
-  @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'sort', required: false, type: String })
   @ApiQuery({ name: 'order', required: false, type: String, enum: ['ASC', 'DESC'] })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -82,7 +82,6 @@ export class PromotionApplicableProductController {
   @Get()
   @Transactional()
   getAll(
-    @Query('search') search?: string,
     @Query('sort') sort?: string,
     @Query('order') order?: string,
     @Query('page') page?: number,
@@ -92,7 +91,6 @@ export class PromotionApplicableProductController {
     @Query('status') status?: string,
   ) {
     return this.getAllPromotionApplicableProductsUseCase.execute({
-      search,
       sort,
       order,
       page,
@@ -169,13 +167,14 @@ export class PromotionApplicableProductController {
     @Param('id', ParseUUIDPipe) id: PromotionApplicableProductId,
     @Body() updatePromotionApplicableProductDto: UpdatePromotionApplicableProductDto,
   ): Promise<IPromotionApplicableProduct> {
-    const command = Builder<IPromotionApplicableProduct>()
+    const promotionApplicableProduct = StrictBuilder<IPromotionApplicableProduct>()
       .uuid(id)
       .promotionId(updatePromotionApplicableProductDto.promotionId as PromotionId)
       .productId(updatePromotionApplicableProductDto.productId as ProductId)
-      .status(updatePromotionApplicableProductDto.status as unknown as Status)
+      .status(updatePromotionApplicableProductDto.status as Status)
+      .updatedAt(new Date() as PromotionApplicableProductUpdatedAt)
       .build();
-    return this.updatePromotionApplicableProductByIdUseCase.execute(command);
+    return this.updatePromotionApplicableProductByIdUseCase.execute(promotionApplicableProduct);
   }
 
   @ApiOperation({ summary: 'Delete a promotion applicable product' })
