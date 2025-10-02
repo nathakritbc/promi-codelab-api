@@ -1,7 +1,7 @@
 ### Login
 # @name login
 POST {{host}}/auth/login
-Content-Type: application/json
+content-type: application/json
 
 {
   "email": "john@example.com",
@@ -18,8 +18,8 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "promotionId": "3e489658-4c47-442b-a9a2-6c5a28f621f3",
-  "scope": "product",
+  "promotionId": "c59ba272-0162-4cf0-96fe-2827bed1d3bd",
+  "scope": "category",
   "minQty": 1,
   "minAmount": 100
 }
@@ -30,11 +30,11 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Promotion Rules with Filters
-GET {{host}}/promotion-rules?search=min&sort=createdAt&order=DESC&page=1&limit=10&promotionId=62184009-df53-45a8-bca7-e960f83df669&scope=product
+GET {{host}}/promotion-rules?sort=createdAt&order=DESC&page=1&limit=10&promotionId=c59ba272-0162-4cf0-96fe-2827bed1d3bd&scope=product
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Rules By Promotion Id
-GET {{host}}/promotion-rules/by-promotion/3e489658-4c47-442b-a9a2-6c5a28f621f3
+GET {{host}}/promotion-rules/by-promotion/c59ba272-0162-4cf0-96fe-2827bed1d3bd
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion Rule By Id
@@ -49,7 +49,7 @@ authorization: Bearer {{myAccessToken}}
 {
   "scope": "category",
   "minQty": 2,
-  "minAmount": 250
+  "minAmount": 253
 }
 
 ### Delete Promotion Rule

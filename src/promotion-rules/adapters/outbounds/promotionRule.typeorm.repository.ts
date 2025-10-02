@@ -3,7 +3,6 @@ import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-t
 import { Injectable } from '@nestjs/common';
 import { Builder, StrictBuilder } from 'builder-pattern';
 import type { PromotionId } from 'src/promotions/applications/domains/promotion.domain';
-import { EStatus } from 'src/types/utility.type';
 import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import type {
   IPromotionRule,
@@ -35,19 +34,10 @@ export class PromotionRuleTypeOrmRepository implements PromotionRuleRepository {
   }
 
   async getAllPromotionRules(params: GetAllPromotionRulesQuery): Promise<GetAllPromotionRulesReturnType> {
-    const { search, sort, order, page, limit, promotionId, scope } = params;
+    const { sort, order, page, limit, promotionId, scope } = params;
 
     const repo = this.promotionRuleModel.tx.getRepository(PromotionRuleEntity);
     const qb = repo.createQueryBuilder('promotionRule');
-
-    qb.andWhere('promotionRule.status != :deleteStatus', { deleteStatus: EStatus.DELETED });
-
-    // Apply filters
-    if (search) {
-      qb.andWhere('(promotionRule.scope ILIKE :search OR promotionRule.promotion_id ILIKE :search)', {
-        search: `%${search}%`,
-      });
-    }
 
     // Apply filters
     if (promotionId) {
@@ -56,12 +46,6 @@ export class PromotionRuleTypeOrmRepository implements PromotionRuleRepository {
 
     if (scope) {
       qb.andWhere('promotionRule.scope = :scope', { scope });
-    }
-
-    if (search) {
-      qb.andWhere('(promotionRule.scope ILIKE :search)', {
-        search: `%${search}%`,
-      });
     }
 
     // Sorting

@@ -13,7 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Builder } from 'builder-pattern';
+import { Builder, StrictBuilder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type {
   IPromotionRule,
@@ -21,6 +21,7 @@ import type {
   PromotionRuleMinAmount,
   PromotionRuleMinQty,
   PromotionRuleScope,
+  PromotionRuleUpdatedAt,
 } from 'src/promotion-rules/applications/domains/promotionRule.domain';
 import { EPromotionRuleScope } from 'src/promotion-rules/applications/domains/promotionRule.domain';
 import { CreatePromotionRuleUseCase } from 'src/promotion-rules/applications/usecases/createPromotionRule.usecase';
@@ -31,7 +32,7 @@ import { GetPromotionRulesByPromotionIdUseCase } from 'src/promotion-rules/appli
 import { UpdatePromotionRuleByIdUseCase } from 'src/promotion-rules/applications/usecases/updatePromotionRuleById.usecase';
 import type { PromotionId } from 'src/promotions/applications/domains/promotion.domain';
 import { CreatePromotionRuleDto } from './dto/createPromotionRule.dto';
-import type { UpdatePromotionRuleDto } from './dto/updatePromotionRule.dto';
+import { UpdatePromotionRuleDto } from './dto/updatePromotionRule.dto';
 
 @ApiTags('Promotion Rules')
 @UseGuards(JwtAuthGuard)
@@ -68,7 +69,6 @@ export class PromotionRuleController {
     status: HttpStatus.OK,
     description: 'The promotion rules have been successfully retrieved.',
   })
-  @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'sort', required: false, type: String })
   @ApiQuery({ name: 'order', required: false, type: String, enum: ['ASC', 'DESC'] })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -78,7 +78,6 @@ export class PromotionRuleController {
   @Get()
   @Transactional()
   getAll(
-    @Query('search') search?: string,
     @Query('sort') sort?: string,
     @Query('order') order?: string,
     @Query('page') page?: number,
@@ -87,7 +86,6 @@ export class PromotionRuleController {
     @Query('scope') scope?: string,
   ) {
     return this.getAllPromotionRulesUseCase.execute({
-      search,
       sort,
       order,
       page,
@@ -133,13 +131,16 @@ export class PromotionRuleController {
     @Param('id', ParseUUIDPipe) id: PromotionRuleId,
     @Body() updatePromotionRuleDto: UpdatePromotionRuleDto,
   ): Promise<IPromotionRule> {
-    const command = Builder<IPromotionRule>()
+    const promotionRule = StrictBuilder<IPromotionRule>()
       .uuid(id)
       .scope(updatePromotionRuleDto.scope as PromotionRuleScope)
       .minQty(updatePromotionRuleDto.minQty as PromotionRuleMinQty)
       .minAmount(updatePromotionRuleDto.minAmount as PromotionRuleMinAmount)
+      .promotionId(updatePromotionRuleDto.promotionId as PromotionId)
+      .updatedAt(new Date() as PromotionRuleUpdatedAt)
       .build();
-    return this.updatePromotionRuleByIdUseCase.execute(command);
+
+    return this.updatePromotionRuleByIdUseCase.execute(promotionRule);
   }
 
   @ApiOperation({ summary: 'Delete a promotion rule' })
