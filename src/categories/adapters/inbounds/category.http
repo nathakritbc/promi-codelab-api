@@ -69,8 +69,8 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "name": "Electronics & Gadgets",
-  "ancestors": []
+  "name": "Electronics & Gadgets   AAA Updated",
+  "ancestors": ["df17669e-9f41-405b-bf8f-2d9555733799"]
 }
 
 ### Update Category Status to Inactive

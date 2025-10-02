@@ -123,7 +123,7 @@ export class CategoryController {
       .name(updateCategoryDto.name as CategoryName)
       .parentId(updateCategoryDto.parentId as CategoryParentId)
       .ancestors(updateCategoryDto.ancestors as string[])
-      .status(updateCategoryDto.status as unknown as Status)
+      .status(updateCategoryDto.status as Status)
       .build();
     return this.updateCategoryByIdUseCase.execute(command);
   }
