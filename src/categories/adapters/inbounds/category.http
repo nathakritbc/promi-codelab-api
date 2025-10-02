@@ -43,6 +43,18 @@ authorization: Bearer {{myAccessToken}}
 GET {{host}}/categories?status=active&isRoot=true&page=1&limit=10
 authorization: Bearer {{myAccessToken}}
 
+### Get All Categories with Filters
+GET {{host}}/categories?parentId=c2c57f74-454d-41a9-af30-af70b766d185
+authorization: Bearer {{myAccessToken}}
+
+### Get All Categories with Filters
+GET {{host}}/categories?treeId=c2c57f74-454d-41a9-af30-af70b766d185
+authorization: Bearer {{myAccessToken}}
+
+### Get All Categories with Filters
+GET {{host}}/categories?status=active&isRoot=true&page=1&limit=10&search=Electronics
+authorization: Bearer {{myAccessToken}}
+
 ### Get ALL Categories with isRoot true
 GET {{host}}/categories?isRoot=true
 authorization: Bearer {{myAccessToken}}

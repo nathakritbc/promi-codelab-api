@@ -14,6 +14,7 @@ export interface GetAllCategoriesQuery extends GetAllParamsType {
   status?: string;
   parentId?: string;
   isRoot?: boolean;
+  treeId?: string;
 }
 
 const categoryRepositoryTokenSymbol: unique symbol = Symbol('CategoryRepository');

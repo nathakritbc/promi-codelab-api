@@ -79,6 +79,7 @@ export class CategoryController {
   @ApiQuery({ name: 'status', required: false, enum: EStatus })
   @ApiQuery({ name: 'parentId', required: false, type: String })
   @ApiQuery({ name: 'isRoot', required: false, type: Boolean })
+  @ApiQuery({ name: 'treeId', required: false, type: String })
   @Get()
   @Transactional()
   getAll(
@@ -90,8 +91,9 @@ export class CategoryController {
     @Query('status') status?: string,
     @Query('parentId') parentId?: string,
     @Query('isRoot') isRoot?: boolean,
+    @Query('treeId') treeId?: string,
   ) {
-    return this.getAllCategoriesUseCase.execute({ search, sort, order, page, limit, status, parentId, isRoot });
+    return this.getAllCategoriesUseCase.execute({ search, sort, order, page, limit, status, parentId, isRoot, treeId });
   }
 
   @ApiOperation({ summary: 'Get a category by id' })

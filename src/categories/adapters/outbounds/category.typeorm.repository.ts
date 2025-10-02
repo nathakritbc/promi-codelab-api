@@ -33,7 +33,7 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
   }
 
   async getAllCategories(params: GetAllCategoriesQuery): Promise<GetAllCategoriesReturnType> {
-    const { search, sort, order, page, limit, status, parentId, isRoot } = params;
+    const { search, sort, order, page, limit, status, parentId, isRoot, treeId } = params;
 
     const repo = this.categoryModel.tx.getRepository(CategoryEntity);
     const qb = repo.createQueryBuilder('category');
@@ -42,13 +42,17 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
 
     // Apply filters
     if (search) {
-      qb.andWhere('(category.name ILIKE :search)', {
+      qb.andWhere('(category.name ILIKE :search OR category.parentId ILIKE :search OR category.treeId ILIKE :search)', {
         search: `%${search}%`,
       });
     }
 
     if (status && status !== EStatus.DELETED) {
       qb.andWhere('category.status = :status', { status });
+    }
+
+    if (treeId) {
+      qb.andWhere('category.treeId = :treeId', { treeId });
     }
 
     if (parentId) {
