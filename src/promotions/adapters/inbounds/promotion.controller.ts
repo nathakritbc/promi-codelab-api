@@ -26,6 +26,7 @@ import type {
   PromotionPriority,
   PromotionStartsAt,
   PromotionStatus,
+  PromotionUpdatedAt,
 } from 'src/promotions/applications/domains/promotion.domain';
 import { EDiscountType, EPromotionStatus } from 'src/promotions/applications/domains/promotion.domain';
 import { CreatePromotionUseCase } from 'src/promotions/applications/usecases/createPromotion.usecase';
@@ -34,7 +35,7 @@ import { GetAllPromotionsUseCase } from 'src/promotions/applications/usecases/ge
 import { GetPromotionByIdUseCase } from 'src/promotions/applications/usecases/getPromotionById.usecase';
 import { UpdatePromotionByIdUseCase } from 'src/promotions/applications/usecases/updatePromotionById.usecase';
 import { CreatePromotionDto } from './dto/createPromotion.dto';
-import type { UpdatePromotionDto } from './dto/updatePromotion.dto';
+import { UpdatePromotionDto } from './dto/updatePromotion.dto';
 
 @ApiTags('Promotions')
 @UseGuards(JwtAuthGuard)
@@ -107,7 +108,7 @@ export class PromotionController {
     @Param('id', ParseUUIDPipe) id: PromotionId,
     @Body() updatePromotionDto: UpdatePromotionDto,
   ): Promise<IPromotion> {
-    const command = Builder<IPromotion>()
+    const promotion = Builder<IPromotion>()
       .uuid(id)
       .name(updatePromotionDto.name as PromotionName)
       .status(updatePromotionDto.status as unknown as PromotionStatus)
@@ -117,8 +118,9 @@ export class PromotionController {
       .discountValue(updatePromotionDto.discountValue as PromotionDiscountValue)
       .maxDiscountAmount(updatePromotionDto.maxDiscountAmount as PromotionMaxDiscountAmount)
       .priority(updatePromotionDto.priority as PromotionPriority)
+      .updatedAt(new Date() as PromotionUpdatedAt)
       .build();
-    return this.updatePromotionByIdUseCase.execute(command);
+    return this.updatePromotionByIdUseCase.execute(promotion);
   }
 
   @ApiOperation({ summary: 'Delete a promotion' })
@@ -130,4 +132,3 @@ export class PromotionController {
     return this.deletePromotionByIdUseCase.execute({ id });
   }
 }
-
