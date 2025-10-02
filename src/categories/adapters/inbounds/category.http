@@ -18,7 +18,7 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "name": "Cate A1 Update"
+  "name": "Cate A2 Update"
 }
 
 
@@ -56,15 +56,15 @@ GET {{host}}/categories?sort=name&order=ASC
 authorization: Bearer {{myAccessToken}}
 
 ### Get Category By Id
-GET {{host}}/categories/{{rootCategoryId}}
+GET {{host}}/categories/df17669e-9f41-405b-bf8f-2d9555733799
 authorization: Bearer {{myAccessToken}}
 
 ### Get Categories By Parent Id
-GET {{host}}/categories/parent/{{rootCategoryId}}
+GET {{host}}/categories/parent/df17669e-9f41-405b-bf8f-2d9555733799
 authorization: Bearer {{myAccessToken}}
 
 ### Update Category
-PUT {{host}}/categories/{{rootCategoryId}}
+PUT {{host}}/categories/df17669e-9f41-405b-bf8f-2d9555733799
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -106,5 +106,5 @@ GET {{host}}/categories?isRoot=true&status=active
 authorization: Bearer {{myAccessToken}}
 
 ### Get Categories with Parent Filter
-GET {{host}}/categories?parentId={{rootCategoryId}}&status=active
+GET {{host}}/categories?parentId=df17669e-9f41-405b-bf8f-2d9555733799&status=active
 authorization: Bearer {{myAccessToken}}
