@@ -1,7 +1,7 @@
 # Database Migrations Guide
 
 ## Overview
-ระบบ migration สำหรับจัดการโครงสร้างฐานข้อมูลของ Expense Tracker API โดยใช้ TypeORM พร้อมระบบติดตาม timestamp และ execution history แบบครบถ้วน
+ระบบ migration สำหรับจัดการโครงสร้างฐานข้อมูลของ Catalog Promotions API โดยใช้ TypeORM พร้อมระบบติดตาม timestamp และ execution history แบบครบถ้วน
 
 ## Configuration
 Configuration ทั้งหมดอยู่ในไฟล์:

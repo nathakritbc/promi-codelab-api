@@ -2,10 +2,10 @@ import { DocumentBuilder } from '@nestjs/swagger';
 import { accessKeyToken } from './jwt.config';
 
 export const swaggerConfig = new DocumentBuilder()
-  .setTitle('Expense API')
-  .setDescription('The Expense API description')
+  .setTitle('Catalog Promotions API')
+  .setDescription('The Catalog Promotions API description')
   .setVersion('1.0')
-  .addTag('Expense')
+  .addTag('Catalog Promotions')
   .addBearerAuth(
     {
       type: 'http',

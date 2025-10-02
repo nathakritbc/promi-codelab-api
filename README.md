@@ -1,871 +1,343 @@
-# 💰 Expense Tracker API
+# Catalog Promotions API
 
-A modern expense tracking RESTful API built with NestJS, TypeORM, and PostgreSQL. This application follows Clean Architecture principles (Hexagonal Architecture) to ensure maintainability, testability, and separation of concerns.
+NestJS + TypeScript service for displaying products together with the best promotion/discount that applies at the time of the request. The code follows hexagonal architecture: domains hold the rules, use cases orchestrate repositories, adapters expose HTTP controllers, and infrastructure stays isolated.
 
-## ✨ Features
+## What the system supports
 
-### 🔐 Authentication & Authorization
+- Products can belong to one or many categories.
+- Promotions can discount by fixed amount or by percent (with an optional max cap).
+- Promotions can target a specific product or a whole category tree (include children flag).
+- Promotion rules (min qty/amount) are evaluated before a discount is applied.
+- When several promotions overlap, the engine chooses the option that gives the highest discount, then falls back to promotion priority.
 
-- User registration and login
-- JWT-based authentication
-- Protected routes with JWT guards
-- Secure password hashing with Argon2
+## Tech stack
 
-### 💸 Expense Management
+- NestJS 11, TypeScript, pnpm
+- TypeORM + PostgreSQL
+- Vitest for unit tests
+- JWT authentication (see `catalog.http` for quick login)
+- Hexagonal architecture with branded domain types
 
-- **CRUD Operations**: Create, read, update, and delete expenses
-- **Advanced Filtering**: Filter expenses by category, date range, and search terms
-- **Sorting & Pagination**: Sort by various fields with pagination support
-- **Expense Reports**: Generate reports grouped by category with date filtering
-- **User Isolation**: Each user can only access their own expenses
+## Prerequisites
 
-### 📊 API Documentation
+- Node.js 22+
+- pnpm 9+
+- PostgreSQL 15+
 
-- Interactive Swagger/OpenAPI documentation
-- Comprehensive API endpoint documentation
-- Request/Response schema validation
-
-### 🏗️ Architecture & Quality
-
-- **Clean Architecture**: Hexagonal Architecture pattern
-- **Domain-Driven Design**: Clear separation of concerns
-- **TypeScript**: Full type safety
-- **Branded Types**: Type-safe identifiers and domain objects
-- **Testing**: Comprehensive test coverage with Vitest
-- **Logging**: Structured logging with Pino
-- **Linting**: Code quality with Oxlint
-- **CI/CD**: Automated versioning with Semantic Release
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js** (v22+)
-- **pnpm** (recommended) or npm
-- **PostgreSQL** (v15+)
-- **Git**
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/nathakritbc/expense_tracker_api.git
-   cd expense_tracker_api
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   pnpm install
-   ```
-
-3. **Environment Configuration**
-
-   Create a `.env` file in the root directory:
-
-   ```env
-   # Application
-   NODE_ENV=development
-   PORT=9009
-
-   # Database Configuration
-   DB_DIALECT=postgres
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_USERNAME=postgres
-   DB_PASSWORD=your_password
-   DB_DATABASE=expense_tracker
-
-   # JWT Configuration
-   JWT_SECRET=your_super_secret_jwt_key_here
-   JWT_EXPIRES_IN=1d
-
-   # Password Hashing
-   ARGON2_MEMORY_COST=19456
-   ```
-
-4. **Database Setup**
-
-   Create a PostgreSQL database:
-
-   ```sql
-   CREATE DATABASE expense_tracker;
-   ```
-
-5. **Database Migration**
-
-   Run database migrations to set up the required tables:
-
-   ```bash
-   pnpm run migration:run
-   ```
-
-6. **Start the application**
-
-   Development mode:
-
-   ```bash
-   pnpm run dev
-   ```
-
-   Production mode:
-
-   ```bash
-   pnpm run build
-   pnpm run start:prod
-   ```
-
-6. **Start the application**
-
-   Development mode:
-
-   ```bash
-   pnpm run dev
-   ```
-
-   Production mode:
-
-   ```bash
-   pnpm run build
-   pnpm run start:prod
-   ```
-
-## 📖 API Documentation
-
-### Live API Testing
-
-The API is available for testing at: **https://expense-tracker-api-yvb7.onrender.com/**
-
-- **Swagger UI**: `https://expense-tracker-api-yvb7.onrender.com/api`
-- **Health Check**: `https://expense-tracker-api-yvb7.onrender.com/`
-
-### Local Development
-
-Once the application is running locally, visit:
-
-- **Swagger UI**: `http://localhost:9009/api`
-- **Health Check**: `http://localhost:9009`
-
-### 🔑 Authentication Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/auth/register` | Register a new user |
-| POST | `/auth/login` | User login |
-
-### 💰 Expense Endpoints
-
-All expense endpoints require JWT authentication via `Authorization: Bearer <token>` header.
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/expenses` | Get all expenses with filtering & pagination |
-| POST | `/expenses` | Create a new expense |
-| GET | `/expenses/:id` | Get expense by ID |
-| PUT | `/expenses/:id` | Update expense by ID |
-| DELETE | `/expenses/:id` | Delete expense by ID |
-| GET | `/expenses/reports/by-category` | Get expense report by category |
-
-#### Query Parameters for `/expenses`
-
-- `search`: Search in title and notes
-- `category`: Filter by expense category
-- `startDate`: Filter expenses from this date (YYYY-MM-DD)
-- `endDate`: Filter expenses until this date (YYYY-MM-DD)
-- `sort`: Sort field (title, amount, date, category)
-- `order`: Sort order (ASC, DESC)
-- `page`: Page number (default: 1)
-- `limit`: Items per page (default: 10)
-
-### Example API Usage
-
-#### Testing with Live API
-
-All examples below can be tested against the live API at `https://expense-tracker-api-yvb7.onrender.com/`
-
-#### 1. Register a new user
+## Getting started
 
 ```bash
-curl -X POST https://expense-tracker-api-yvb7.onrender.com/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "securePassword123"
-  }'
+pnpm install
+pnpm run build
 ```
 
-**Expected Response:**
+Create a `.env` (copy `env.example`) and configure database + JWT secret.
+
+```bash
+pnpm run migration:run
+pnpm run start:dev
+```
+
+Swagger is available at `http://localhost:9009/api` once the app is running.
+
+> 💡 **Swagger tip**: เปิดเบราว์เซอร์ไปที่ `http://localhost:9009/api` แล้วลองยิงคำสั่งได้ทันที เช่น 
+> - `POST /auth/login` เพื่อรับ token
+> - `POST /categories`, `POST /products`, `POST /promotions` สำหรับ seed ข้อมูล
+> - `GET /catalog/products` เพื่อดูผลลัพธ์ catalog
+>
+> Swagger จัดกลุ่ม endpoint ตามโมดูล และแสดงตัวอย่าง schema/response ให้เลือกปรับค่าก่อนส่งได้ ช่วยยืนยันพฤติกรรมของระบบได้รวดเร็วโดยไม่ต้องใช้ REST client ภายนอก
+
+## Sample data & manual test plan
+
+Use the REST client script `src/catalog/adapters/inbounds/catalog.http`. Each block is labelled; run them in order with the VS Code REST Client or IntelliJ HTTP Client.
+
+### Step 1: Login
+
+Sends `POST /auth/login` with the seeded admin user. Stores `@myAccessToken` for later requests.
+
+**Request body**
+
 ```json
 {
-  "id": "user-id",
-  "email": "test@example.com",
-  "createdAt": "2024-01-15T10:30:00.000Z",
-  "updatedAt": "2024-01-15T10:30:00.000Z"
+  "email": "john@example.com",
+  "password": "password123"
 }
 ```
 
-#### 2. Login
+**Sample response**
 
-```bash
-curl -X POST https://expense-tracker-api-yvb7.onrender.com/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com", 
-    "password": "securePassword123"
-  }'
-```
-
-**Expected Response:**
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "accessToken": "<jwt>",
+  "refreshToken": "<jwt>",
   "user": {
-    "id": "user-id",
-    "email": "test@example.com"
+    "uuid": "9e5b3b3e-6f2c-4fd8-b3e6-7f9d2ba7f8ea",
+    "email": "john@example.com",
+    "role": "admin"
   }
 }
 ```
 
-#### 3. Create an expense
+### Step 2: Seed scenario data
 
-```bash
-curl -X POST https://expense-tracker-api-yvb7.onrender.com/expenses \
-  -H "Authorization: Bearer <your-jwt-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Lunch at restaurant",
-    "amount": 250.50,
-    "category": "Food",
-    "date": "2024-01-15",
-    "notes": "Team lunch meeting"
-  }'
-```
+- Create categories `Monitors` and `Computer Accessories`.
+- Create products:
+  - `4K Monitor` price 12,000
+  - `Mechanical Keyboard` price 2,500
+  - `Wireless Mouse` price 900
+- Link products to their categories.
+- Create promotions:
+  - Promotion A: `Monitor Mega Sale` (15% capped 1,500) for monitor category, include children.
+  - Promotion B: `Accessory Happy Hour` (fixed 200) for computer accessories category.
+  - Promotion C: `Keyboard Flash Deal` (10% priority 7) for the keyboard product only.
+- Attach promotions to categories/products via the final three POST requests in the script.
 
-**Expected Response:**
+| Step | Endpoint | Request body example |
+|------|----------|----------------------|
+|Create category|`POST /categories`|
 ```json
 {
-  "id": "expense-id",
-  "title": "Lunch at restaurant",
-  "amount": 250.50,
-  "category": "Food",
-  "date": "2024-01-15",
-  "notes": "Team lunch meeting",
-  "userId": "user-id",
-  "createdAt": "2024-01-15T10:30:00.000Z",
-  "updatedAt": "2024-01-15T10:30:00.000Z"
+  "name": "Monitors",
+  "status": "active"
 }
-```
-
-#### 4. Get all expenses
-
-```bash
-curl -X GET https://expense-tracker-api-yvb7.onrender.com/expenses \
-  -H "Authorization: Bearer <your-jwt-token>"
-```
-
-#### 5. Get expenses with filtering
-
-```bash
-curl -X GET "https://expense-tracker-api-yvb7.onrender.com/expenses?category=Food&startDate=2024-01-01&endDate=2024-01-31&page=1&limit=10" \
-  -H "Authorization: Bearer <your-jwt-token>"
-```
-
-#### 6. Get expense by ID
-
-```bash
-curl -X GET https://expense-tracker-api-yvb7.onrender.com/expenses/expense-id \
-  -H "Authorization: Bearer <your-jwt-token>"
-```
-
-#### 7. Update an expense
-
-```bash
-curl -X PUT https://expense-tracker-api-yvb7.onrender.com/expenses/expense-id \
-  -H "Authorization: Bearer <your-jwt-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Updated lunch expense",
-    "amount": 300.00,
-    "category": "Food",
-    "date": "2024-01-15",
-    "notes": "Updated team lunch meeting"
-  }'
-```
-
-#### 8. Delete an expense
-
-```bash
-curl -X DELETE https://expense-tracker-api-yvb7.onrender.com/expenses/expense-id \
-  -H "Authorization: Bearer <your-jwt-token>"
-```
-
-#### 9. Get expense report by category
-
-```bash
-curl -X GET "https://expense-tracker-api-yvb7.onrender.com/expenses/reports/by-category?startDate=2024-01-01&endDate=2024-01-31" \
-  -H "Authorization: Bearer <your-jwt-token>"
-```
-
-**Expected Response:**
+```|
+|Create product|`POST /products`|
 ```json
 {
-  "reports": [
+  "code": "MON-001",
+  "name": "4K Monitor",
+  "description": "27-inch UHD monitor",
+  "price": 12000,
+  "status": "active"
+}
+```|
+|Create promotion|`POST /promotions`|
+```json
+{
+  "name": "Monitor Mega Sale",
+  "status": "active",
+  "startsAt": "2025-01-01T00:00:00Z",
+  "endsAt": "2025-12-31T23:59:59Z",
+  "discountType": "Percent",
+  "discountValue": 15,
+  "maxDiscountAmount": 1500,
+  "priority": 5
+}
+```|
+|Attach category|`POST /promotion-applicable-categories`|
+```json
+{
+  "promotionId": "${monitorPromotionId}",
+  "categoryId": "${monitorCategoryId}",
+  "includeChildren": true,
+  "status": "active"
+}
+```|
+|Attach product|`POST /promotion-applicable-products`|
+```json
+{
+  "promotionId": "${keyboardPromotionId}",
+  "productId": "${keyboardProductId}",
+  "status": "active"
+}
+```|
+
+> _หมายเหตุ_: ตัวอย่างในตารางเป็นหนึ่งในหลายคำสั่งที่อยู่ใน `catalog.http`; ใช้ UUID จาก response ของขั้นตอนก่อนหน้าแทน placeholder
+
+After these calls you have exactly the scenario from the prompt: monitor product under category promotion, keyboard product receiving both a category fixed discount and a product percent discount, mouse only inheriting the accessory promotion.
+
+### Step 3: Fetch catalog view
+
+`GET /catalog/products` returns every product with:
+
+- `basePrice`: list price from product domain
+- `finalPrice`: best price after selected promotion
+- `discountAmount`: amount applied
+- `appliedPromotion`: metadata about the best promotion
+- `promotions`: all promotions evaluated in descending discount order
+
+#### Expected results by case
+
+1. **Monitor (category-only promotion)**
+   - Applied promotion should be `Monitor Mega Sale`.
+   - Discount amount should be 1,500 (15% of 12,000 is 1,800 but capped at 1,500).
+   - Final price should be 10,500.
+
+2. **Keyboard (overlapping product vs category)**
+   - Product-specific `Keyboard Flash Deal` yields 250 discount (10% of 2,500).
+   - Category promotion gives fixed 200.
+   - Engine must select `Keyboard Flash Deal` because 250 > 200.
+   - Response should show `source` = `product`, `discountAmount` = 250, `finalPrice` = 2,250, with the accessory promotion still listed in the `promotions` array as the second option.
+
+3. **Mouse (single category promotion)**
+   - Only `Accessory Happy Hour` applies.
+   - Discount amount 200, final price 700.
+
+4. **Promotion deactivation sanity check**
+   - Pause any promotion (e.g., `PUT /promotions/:id` status `paused`).
+   - Re-run `GET /catalog/products`; affected products should fall back to the next eligible promotion or full price if none remain.
+
+Document observed values during QA to confirm business rules are respected.
+
+**Sample response payload**
+
+```json
+{
+  "result": [
     {
-      "category": "Food",
-      "totalAmount": 550.50,
-      "count": 2
+      "product": {
+        "uuid": "${monitorProductId}",
+        "code": "MON-001",
+        "name": "4K Monitor",
+        "description": "27-inch UHD monitor",
+        "price": 12000,
+        "status": "active"
+      },
+      "basePrice": 12000,
+      "finalPrice": 10500,
+      "discountAmount": 1500,
+      "appliedPromotion": {
+        "promotionId": "${monitorPromotionId}",
+        "name": "Monitor Mega Sale",
+        "discountType": "Percent",
+        "discountValue": 15,
+        "maxDiscountAmount": 1500,
+        "priority": 5,
+        "discountAmount": 1500,
+        "finalPrice": 10500,
+        "source": "category",
+        "metadata": {
+          "associationId": "${monitorAssociationId}",
+          "appliedCategoryId": "${monitorCategoryId}",
+          "includeChildren": true
+        }
+      },
+      "promotions": [
+        {
+          "promotionId": "${monitorPromotionId}",
+          "name": "Monitor Mega Sale",
+          "discountType": "Percent",
+          "discountValue": 15,
+          "maxDiscountAmount": 1500,
+          "priority": 5,
+          "discountAmount": 1500,
+          "finalPrice": 10500,
+          "source": "category",
+          "metadata": {
+            "associationId": "${monitorAssociationId}",
+            "appliedCategoryId": "${monitorCategoryId}",
+            "includeChildren": true
+          }
+        }
+      ]
     },
     {
-      "category": "Transport",
-      "totalAmount": 150.00,
-      "count": 1
+      "product": {
+        "uuid": "${keyboardProductId}",
+        "code": "KEY-001",
+        "name": "Mechanical Keyboard",
+        "description": "RGB TKL keyboard",
+        "price": 2500,
+        "status": "active"
+      },
+      "basePrice": 2500,
+      "finalPrice": 2250,
+      "discountAmount": 250,
+      "appliedPromotion": {
+        "promotionId": "${keyboardPromotionId}",
+        "name": "Keyboard Flash Deal",
+        "discountType": "Percent",
+        "discountValue": 10,
+        "priority": 7,
+        "discountAmount": 250,
+        "finalPrice": 2250,
+        "source": "product",
+        "metadata": {
+          "associationId": "${keyboardAssociationId}"
+        }
+      },
+      "promotions": [
+        {
+          "promotionId": "${keyboardPromotionId}",
+          "name": "Keyboard Flash Deal",
+          "discountType": "Percent",
+          "discountValue": 10,
+          "priority": 7,
+          "discountAmount": 250,
+          "finalPrice": 2250,
+          "source": "product",
+          "metadata": {
+            "associationId": "${keyboardAssociationId}"
+          }
+        },
+        {
+          "promotionId": "${accessoryPromotionId}",
+          "name": "Accessory Happy Hour",
+          "discountType": "Fixed",
+          "discountValue": 200,
+          "priority": 3,
+          "discountAmount": 200,
+          "finalPrice": 2300,
+          "source": "category",
+          "metadata": {
+            "associationId": "${accessoryAssociationId}",
+            "appliedCategoryId": "${accessoriesCategoryId}",
+            "includeChildren": false
+          }
+        }
+      ]
     }
   ],
-  "totalExpenses": 700.50,
-  "totalCount": 3
+  "meta": {
+    "total": 3,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 1
+  }
 }
 ```
 
-### Testing with JavaScript/Node.js
+## Automated tests
 
-```javascript
-// Example using fetch API
-const API_BASE = 'https://expense-tracker-api-yvb7.onrender.com';
-
-// Register user
-const registerResponse = await fetch(`${API_BASE}/auth/register`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    email: 'test@example.com',
-    password: 'securePassword123'
-  })
-});
-
-// Login
-const loginResponse = await fetch(`${API_BASE}/auth/login`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    email: 'test@example.com',
-    password: 'securePassword123'
-  })
-});
-
-const { access_token } = await loginResponse.json();
-
-// Create expense
-const createExpenseResponse = await fetch(`${API_BASE}/expenses`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${access_token}`
-  },
-  body: JSON.stringify({
-    title: 'Lunch at restaurant',
-    amount: 250.50,
-    category: 'Food',
-    date: '2024-01-15',
-    notes: 'Team lunch meeting'
-  })
-});
-```
-
-### Testing with Postman
-
-1. **Import the collection** or create new requests
-2. **Set base URL**: `https://expense-tracker-api-yvb7.onrender.com`
-3. **Authentication**: Use Bearer Token in Authorization header
-4. **Test endpoints**:
-   - `POST /auth/register`
-   - `POST /auth/login`
-   - `GET /expenses`
-   - `POST /expenses`
-   - `GET /expenses/{id}`
-   - `PUT /expenses/{id}`
-   - `DELETE /expenses/{id}`
-   - `GET /expenses/reports/by-category`
-
-### Local Development Examples
-
-For local development, replace the base URL with `http://localhost:9009`:
+Unit tests live alongside the domains and use cases. Run them with:
 
 ```bash
-# Register a new user
-curl -X POST http://localhost:9009/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "securePassword123"
-  }'
-
-# Login
-curl -X POST http://localhost:9009/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com", 
-    "password": "securePassword123"
-  }'
-
-# Create an expense
-curl -X POST http://localhost:9009/expenses \
-  -H "Authorization: Bearer <your-jwt-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Lunch at restaurant",
-    "amount": 250.50,
-    "category": "Food",
-    "date": "2024-01-15",
-    "notes": "Team lunch meeting"
-  }'
-
-# Get expenses with filtering
-curl -X GET "http://localhost:9009/expenses?category=Food&startDate=2024-01-01&endDate=2024-01-31&page=1&limit=10" \
-  -H "Authorization: Bearer <your-jwt-token>"
+pnpm test
 ```
 
-### Error Handling
+(If `fnm` symlink permissions block the test command inside containers, set `FNM_MULTISHELL_PATH` to a writable path before re-running.)
 
-The API returns standard HTTP status codes and error messages:
+Notable suites:
 
-#### Common HTTP Status Codes
+- `src/catalog/applications/domains/catalogProduct.domain.spec.ts` verifies discount selection rules.
+- `src/catalog/applications/usecases/getCatalogProducts.usecase.spec.ts` stubs repositories to cover category + product promotion merges.
 
-| Status Code | Description | Example |
-|-------------|-------------|---------|
-| `200` | Success | Request completed successfully |
-| `201` | Created | New resource created successfully |
-| `400` | Bad Request | Invalid request data |
-| `401` | Unauthorized | Missing or invalid JWT token |
-| `403` | Forbidden | Insufficient permissions |
-| `404` | Not Found | Resource not found |
-| `409` | Conflict | Resource already exists (e.g., email already registered) |
-| `422` | Unprocessable Entity | Validation errors |
-| `500` | Internal Server Error | Server error |
+## Project layout
 
-#### Error Response Format
-
-```json
-{
-  "statusCode": 400,
-  "message": "Validation failed",
-  "error": "Bad Request",
-  "details": [
-    {
-      "field": "email",
-      "message": "email must be an email"
-    },
-    {
-      "field": "password",
-      "message": "password should not be empty"
-    }
-  ]
-}
 ```
-
-#### Common Error Scenarios
-
-**1. Invalid JWT Token:**
-```bash
-curl -X GET https://expense-tracker-api-yvb7.onrender.com/expenses \
-  -H "Authorization: Bearer invalid-token"
-```
-
-**Response:**
-```json
-{
-  "statusCode": 401,
-  "message": "Unauthorized",
-  "error": "Unauthorized"
-}
-```
-
-**2. Email Already Exists:**
-```bash
-curl -X POST https://expense-tracker-api-yvb7.onrender.com/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "existing@example.com",
-    "password": "password123"
-  }'
-```
-
-**Response:**
-```json
-{
-  "statusCode": 409,
-  "message": "User with this email already exists",
-  "error": "Conflict"
-}
-```
-
-**3. Invalid Expense Data:**
-```bash
-curl -X POST https://expense-tracker-api-yvb7.onrender.com/expenses \
-  -H "Authorization: Bearer <valid-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "",
-    "amount": -100,
-    "category": "InvalidCategory"
-  }'
-```
-
-**Response:**
-```json
-{
-  "statusCode": 422,
-  "message": "Validation failed",
-  "error": "Unprocessable Entity",
-  "details": [
-    {
-      "field": "title",
-      "message": "title should not be empty"
-    },
-    {
-      "field": "amount",
-      "message": "amount must be a positive number"
-    },
-    {
-      "field": "category",
-      "message": "category must be one of the following values: Food, Transport, Entertainment, Shopping, Health, Education, Other"
-    }
-  ]
-}
-```
-
-### Testing Checklist
-
-When testing the API, make sure to verify:
-
-- [ ] **Authentication**: Register and login work correctly
-- [ ] **JWT Token**: Token is received and can be used for authenticated requests
-- [ ] **CRUD Operations**: Create, read, update, delete expenses
-- [ ] **Filtering**: Search, category filter, date range filter
-- [ ] **Pagination**: Page and limit parameters work
-- [ ] **Sorting**: Sort by different fields
-- [ ] **Reports**: Category-based expense reports
-- [ ] **Error Handling**: Invalid requests return appropriate error codes
-- [ ] **Validation**: Required fields and data types are validated
-- [ ] **User Isolation**: Users can only access their own expenses
-
-## 🛠️ Development
-
-### Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `pnpm run dev` | Start development server with hot reload |
-| `pnpm run build` | Build the application |
-| `pnpm run start` | Start production server |
-| `pnpm run lint` | Run code linting |
-| `pnpm run test` | Run tests |
-| `pnpm run test:watch` | Run tests in watch mode |
-| `pnpm run test:cov` | Run tests with coverage |
-
-### Project Structure
-
-```text
 src/
-├── auth/                    # Authentication module
-│   ├── adapters/
-│   │   └── inbounds/       # Controllers and DTOs
-│   ├── usecases/           # Business logic
-│   └── auth.module.ts
-├── expenses/                # Expense management module
-│   ├── adapters/
-│   │   ├── inbounds/       # Controllers and DTOs
-│   │   └── outbounds/      # Repositories and entities
-│   ├── applications/
-│   │   ├── domains/        # Domain models
-│   │   ├── ports/          # Interfaces
-│   │   └── usecases/       # Business logic
-│   └── expenses.module.ts
-├── users/                   # User management module
-├── databases/               # Database configuration
-├── configs/                 # Application configuration
-├── utils/                   # Utility functions
-└── main.ts                 # Application entry point
+  catalog/
+    adapters/inbounds/        # Catalog controller + REST script
+    applications/
+      domains/                # CatalogProduct domain model
+      usecases/               # GetCatalogProducts use case
+  products/ ...               # Existing modules reused via ports
+  promotions/ ...
 ```
 
-### Architecture
+Every module exports its repository token so `CatalogModule` can compose them without breaking boundaries.
 
-This project follows **Hexagonal Architecture** (Ports and Adapters):
-
-- **Domain Layer**: Core business logic and entities (`applications/domains/`)
-- **Application Layer**: Use cases and business rules (`applications/usecases/`)
-- **Infrastructure Layer**: External concerns like databases (`adapters/outbounds/`)
-- **Interface Layer**: Controllers and DTOs (`adapters/inbounds/`)
-
-### Testing
-
-The project uses **Vitest** for testing:
+## Common commands
 
 ```bash
-# Run all tests
-pnpm run test
-
-# Run tests in watch mode
-pnpm run test:watch
-
-# Run tests with coverage
-pnpm run test:cov
-
-# View coverage report
-open coverage/index.html
+pnpm run start:dev    # start NestJS with reload
+pnpm run lint         # run oxlint
+pnpm run migration:run
+pnpm run migration:revert
 ```
 
-### Code Quality
-
-- **TypeScript**: Strong typing for better development experience
-- **Oxlint**: Fast linting for code quality
-- **Prettier**: Code formatting
-- **Husky**: Git hooks for pre-commit checks
-
-## 🚢 Deployment
-
-### Environment Variables for Production
-
-Make sure to set the following environment variables in production:
-
-```env
-NODE_ENV=production
-PORT=9009
-DB_HOST=your-prod-db-host
-DB_PORT=5432
-DB_USERNAME=your-prod-username
-DB_PASSWORD=your-secure-password
-DB_DATABASE=expense_tracker_prod
-JWT_SECRET=your-super-secure-jwt-secret
-JWT_EXPIRES_IN=24h
-```
-
-## 🐳 Docker Deployment
-
-This project includes comprehensive Docker support for both development and production environments.
-
-### Quick Start with Docker
-
-1. **Clone and setup:**
-   ```bash
-   git clone https://github.com/nathakritbc/expense_tracker_api.git
-   cd expense_tracker_api
-   make setup
-   ```
-
-2. **Or manually:**
-   ```bash
-   # Copy environment file
-   cp env.example .env
-   
-   # Start development environment
-   make dev
-   
-   # Or start production environment
-   make prod
-   ```
-
-### Available Docker Commands
-
-```bash
-# Development
-make dev          # Start development environment
-make dev-logs     # View development logs
-make dev-shell    # Open development shell
-
-# Production
-make prod         # Start production environment
-make prod-logs    # View production logs
-make prod-shell   # Open production shell
-
-# Management
-make stop         # Stop all containers
-make status       # Show container status
-make clean        # Remove all containers and volumes
-make build        # Build all Docker images
-
-# Database
-make migrate      # Run database migrations manually
-make db-status    # Show migration status
-make db-reset     # Reset database
-
-# Health checks
-make health       # Check application health
-```
-
-### Docker Services
-
-- **API**: NestJS application (port 9009) - runs migrations automatically in production
-- **PostgreSQL**: Database (port 5432)
-- **Nginx**: Reverse proxy (port 80/443) - production only
-
-### Environment Configuration
-
-Copy `env.example` to `.env` and configure your environment variables:
-
-```env
-# Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=postgres123
-DB_DATABASE=expense_tracker
-
-# JWT
-JWT_SECRET=your-super-secret-jwt-key
-
-# Application
-NODE_ENV=development
-PORT=9009
-```
-
-For detailed Docker deployment instructions, see [README-Docker.md](README-Docker.md).
-
-## ☸️ Kubernetes Deployment
-
-This repo now includes a minimal Kubernetes setup in `k8s/` suitable for production-like deployments. It deploys the API, a ClusterIP Service, and optional Postgres via StatefulSet, plus an example Ingress.
-
-### Prerequisites
-- A Kubernetes cluster and `kubectl` configured
-- A container registry to push your API image
-- Optional: Ingress controller (e.g., NGINX Ingress) if using `k8s/ingress.yaml`
-
-### 1) Build and push the image
-```bash
-# Build
-docker build -t <registry>/expense-tracker-api:<tag> .
-
-# Push
-docker push <registry>/expense-tracker-api:<tag>
-```
-
-Update the image in `k8s/deployment.yaml` at `spec.template.spec.containers[0].image`.
-
-### 2) Apply base manifests
-```bash
-kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/secret.yaml
-kubectl apply -f k8s/deployment.yaml
-kubectl apply -f k8s/service.yaml
-```
-
-By default, the app expects Postgres host `postgres` in the same namespace. You have two options:
-
-#### Option A: Use managed/external Postgres (recommended)
-- Edit `k8s/secret.yaml` and set `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE` to your external DB
-- Apply: `kubectl apply -f k8s/secret.yaml -n expense-tracker`
-
-#### Option B: Run Postgres in-cluster
-```bash
-kubectl apply -f k8s/postgres.yaml
-```
-
-This creates a `StatefulSet` with a 5Gi PVC. Adjust storage class and size as needed.
-
-### 3) (Optional) Ingress
-Edit host in `k8s/ingress.yaml` and apply:
-```bash
-kubectl apply -f k8s/ingress.yaml
-```
-
-### 4) Verify
-```bash
-kubectl get pods -n expense-tracker
-kubectl logs -n expense-tracker deploy/expense-tracker-api
-kubectl port-forward -n expense-tracker svc/expense-tracker-api 9009:80
-```
-Visit `http://localhost:9009/health`.
-
-### Notes
-- Health probes use `/health` on port 9009.
-- Logging/telemetry include k8s metadata via env (`POD_NAME`, `POD_NAMESPACE`, `NODE_NAME`).
-- To enable OTLP export, set `OTLP_EXPORTER_URL` in `k8s/configmap.yaml` to your collector endpoint.
-
-
-## 📝 Release Management
-
-This project uses [Semantic Release](https://semantic-release.gitbook.io/) for automated versioning and changelog generation.
-
-### Commit Message Convention
-
-Follow [Conventional Commits](https://conventionalcommits.org/) specification:
-
-```text
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-#### Types
-
-- `feat`: New feature (minor version bump)
-- `fix`: Bug fix (patch version bump)
-- `perf`: Performance improvement (patch version bump)
-- `refactor`: Code refactoring (patch version bump)
-- `docs`: Documentation changes (no release)
-- `style`: Code style changes (no release)
-- `test`: Test changes (no release)
-- `build`: Build system changes (patch version bump)
-- `ci`: CI configuration changes (patch version bump)
-
-#### Examples
-
-```bash
-feat: add expense filtering by date range
-fix: resolve null pointer exception in expense calculation
-feat!: migrate to new authentication system (breaking change)
-docs: update API documentation
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Follow the commit message convention
-4. Make your changes and add tests
-5. Ensure all tests pass (`pnpm run test`)
-6. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under **nathakritbc**.
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-#### Database Connection Error
-
-- Verify PostgreSQL is running
-- Check database credentials in `.env`
-- Ensure database exists
-
-#### JWT Authentication Failed
-
-- Check if `JWT_SECRET` is set in environment variables
-- Verify token format: `Authorization: Bearer <token>`
-- Check if token hasn't expired
-
-#### Port Already in Use
-
-- Change `PORT` in `.env` file
-- Kill process using the port: `lsof -ti:9009 | xargs kill -9`
-
-### Support
-
-If you encounter any issues or have questions:
-
-1. Check existing [GitHub Issues](link-to-issues)
-2. Review the API documentation at `/api`
-3. Check application logs for error details
-
----
-
-## Built with ❤️
-
-NestJS, TypeORM, and PostgreSQL
+## Notes
+
+- Authentication is required for all endpoints; remember the login step in the HTTP script.
+- The catalog endpoint is read-only and transactional via `@nestjs-cls/transactional` to reuse the request-scoped TypeORM manager.
+- When adding new promotion scenarios, update the sample script and tests to reflect expected catalogue outcomes.

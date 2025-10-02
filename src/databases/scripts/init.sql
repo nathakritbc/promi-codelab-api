@@ -1,4 +1,4 @@
--- Database initialization script for Expense Tracker API
+-- Database initialization script for Catalog Promotions API
 -- This script runs when the PostgreSQL container starts for the first time
 
 -- Create database if it doesn't exist (this is handled by POSTGRES_DB environment variable)

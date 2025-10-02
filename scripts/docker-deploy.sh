@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Docker deployment script for Expense Tracker API
+# Docker deployment script for Catalog Promotions API
 # Usage: ./scripts/docker-deploy.sh [dev|prod]
 
 set -e
