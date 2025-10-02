@@ -17,8 +17,8 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "name": "Summer Sale 2025",
-  "status": "draft",
+  "name": "Summer Sale22 2025",
+  "status": "active",
   "startsAt": "2025-06-01T00:00:00Z",
   "endsAt": "2025-08-31T23:59:59Z",
   "discountType": "Percent",
@@ -40,11 +40,11 @@ GET {{host}}/promotions?search=Summer
 authorization: Bearer {{myAccessToken}}
 
 ### Get Promotion By Id
-GET {{host}}/promotions/{{promotionId}}
+GET {{host}}/promotions/e9b4b19e-094e-439b-9390-6b7346924390
 authorization: Bearer {{myAccessToken}}
 
 ### Update Promotion
-PUT {{host}}/promotions/{{promotionId}}
+PUT {{host}}/promotions/e9b4b19e-094e-439b-9390-6b7346924390
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -57,7 +57,7 @@ authorization: Bearer {{myAccessToken}}
 }
 
 ### Update Promotion Status to Paused
-PUT {{host}}/promotions/{{promotionId}}
+PUT {{host}}/promotions/e9b4b19e-094e-439b-9390-6b7346924390
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -66,7 +66,7 @@ authorization: Bearer {{myAccessToken}}
 }
 
 ### Update Promotion Status to Ended
-PUT {{host}}/promotions/{{promotionId}}
+PUT {{host}}/promotions/e9b4b19e-094e-439b-9390-6b7346924390
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -75,7 +75,7 @@ authorization: Bearer {{myAccessToken}}
 }
 
 ### Delete Promotion
-DELETE {{host}}/promotions/{{promotionId}}
+DELETE {{host}}/promotions/e9b4b19e-094e-439b-9390-6b7346924390
 authorization: Bearer {{myAccessToken}}
 
 ### Create Fixed Discount Promotion

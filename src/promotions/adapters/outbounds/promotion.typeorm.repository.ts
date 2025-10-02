@@ -42,7 +42,7 @@ export class PromotionTypeOrmRepository implements PromotionRepository {
 
     // Apply filters
     if (search) {
-      qb.andWhere('(promotion.name ILIKE :search)', {
+      qb.andWhere('(promotion.name ILIKE :search OR promotion.discount_type ILIKE :search)', {
         search: `%${search}%`,
       });
     }
@@ -120,4 +120,3 @@ export class PromotionTypeOrmRepository implements PromotionRepository {
       .build();
   }
 }
-
