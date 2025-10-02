@@ -1,3 +1,4 @@
+import { ProductCategory } from 'src/product-categories/applications/domains/productCategory.domain';
 import { EStatus, type Brand, type CreatedAt, type Status, type UpdatedAt } from 'src/types/utility.type';
 
 // Branded types for type safety
@@ -16,6 +17,7 @@ export interface IProduct {
   description?: ProductDescription;
   price: ProductPrice;
   status: Status;
+  productCategories?: ProductCategory[];
   createdAt?: ProductCreatedAt;
   updatedAt?: ProductUpdatedAt;
 }
@@ -27,6 +29,7 @@ export class Product implements IProduct {
   description?: ProductDescription;
   price: ProductPrice;
   status: Status;
+  productCategories: ProductCategory[];
   createdAt?: ProductCreatedAt;
   updatedAt?: ProductUpdatedAt;
 

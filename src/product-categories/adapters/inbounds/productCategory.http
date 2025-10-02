@@ -1,14 +1,13 @@
-@host = http://localhost:3000
-
 ### Login
 # @name login
 POST {{host}}/auth/login
 content-type: application/json
 
 {
-  "username": "user2",
-  "password": "12345678"
+  "email": "john@example.com",
+  "password": "password123"
 }
+###
 
 @myAccessToken = {{login.response.body.accessToken}}
 
@@ -19,10 +18,12 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "productId": "product-uuid-123",
-  "categoryId": "category-uuid-456",
+  "productId": "8ff53a77-7530-4eac-90c0-fc23b810bd26",
+  "categoryId": "a524c95d-5083-42d0-8e07-f2f0cba874c7",
   "status": "active"
 }
+
+###
 
 @productCategoryId = {{createProductCategory.response.body.uuid}}
 

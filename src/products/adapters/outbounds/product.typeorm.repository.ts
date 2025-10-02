@@ -2,6 +2,9 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 import { Injectable } from '@nestjs/common';
 import { Builder, StrictBuilder } from 'builder-pattern';
+import { isEmpty } from 'radash';
+import { ProductCategoryTypeOrmRepository } from 'src/product-categories/adapters/outbounds/productCategory.typeorm.repository';
+import type { ProductCategory } from 'src/product-categories/applications/domains/productCategory.domain';
 import type { Status } from 'src/types/utility.type';
 import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import type {
@@ -83,6 +86,7 @@ export class ProductTypeOrmRepository implements ProductRepository {
   async getProductById({ id }: { id: ProductId }): Promise<IProduct | undefined> {
     const product = await this.productModel.tx.getRepository(ProductEntity).findOne({
       where: { uuid: id },
+      relations: ['product_categories'],
     });
 
     if (!product) return undefined;
@@ -111,6 +115,11 @@ export class ProductTypeOrmRepository implements ProductRepository {
   }
 
   public static toDomain(productEntity: ProductEntity): IProduct {
+    const productCategories = isEmpty(productEntity.product_categories)
+      ? []
+      : productEntity.product_categories?.map((productCategory) =>
+          ProductCategoryTypeOrmRepository.toDomain(productCategory),
+        );
     return Builder<IProduct>()
       .uuid(productEntity.uuid as ProductId)
       .code(productEntity.code as ProductCode)
@@ -118,6 +127,7 @@ export class ProductTypeOrmRepository implements ProductRepository {
       .description(productEntity.description as ProductDescription)
       .price(productEntity.price as ProductPrice)
       .status(productEntity.status as Status)
+      .productCategories(productCategories as ProductCategory[])
       .createdAt(productEntity.createdAt as ProductCreatedAt)
       .updatedAt(productEntity.updatedAt as ProductUpdatedAt)
       .build();

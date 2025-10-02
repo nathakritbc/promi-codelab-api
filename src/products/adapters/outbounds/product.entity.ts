@@ -1,3 +1,4 @@
+import { ProductCategoryEntity } from 'src/product-categories/adapters/outbounds/productCategory.entity';
 import type {
   ProductCode,
   ProductCreatedAt,
@@ -8,7 +9,7 @@ import type {
   ProductUpdatedAt,
 } from 'src/products/applications/domains/product.domain';
 import type { Status } from 'src/types/utility.type';
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 export const ProductTableName = 'products';
 
@@ -41,4 +42,8 @@ export class ProductEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   declare updatedAt: ProductUpdatedAt;
+
+  // Relationship to ProductCategory
+  @OneToMany(() => ProductCategoryEntity, (productCategory) => productCategory.product)
+  product_categories?: ProductCategoryEntity[];
 }
