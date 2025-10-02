@@ -1,5 +1,4 @@
-import { ExpenseEntity } from 'src/expenses/adapters/outbounds/expense.entity';
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 import type {
   UserCreatedAt,
   UserEmail,
@@ -29,9 +28,6 @@ export class UserEntity {
     type: 'text',
   })
   password: UserPassword;
-
-  @OneToMany('ExpenseEntity', 'user')
-  expenses: ExpenseEntity[];
 
   @CreateDateColumn()
   declare createdAt: UserCreatedAt;

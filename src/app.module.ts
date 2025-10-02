@@ -11,7 +11,6 @@ import { httpConfig } from './configs/http.config';
 import { loggerConfig } from './configs/logger.config';
 import { typeormRootConfig } from './configs/typeorm.config';
 import { DatabaseModule } from './databases/database.module';
-import { ExpensesModule } from './expenses/expenses.module';
 import { HealthModule } from './health/health.module';
 import { ProductCategoriesModule } from './product-categories/productCategories.module';
 import { ProductsModule } from './products/products.module';
@@ -30,7 +29,6 @@ import { UserModule } from './users/user.module';
     AuthModule,
     CategoriesModule,
     DatabaseModule,
-    ExpensesModule,
     HealthModule,
     ProductCategoriesModule,
     ProductsModule,
