@@ -1,173 +1,125 @@
 # Database Migrations Guide
 
-## Overview
-ระบบ migration สำหรับจัดการโครงสร้างฐานข้อมูลของ Catalog Promotions API โดยใช้ TypeORM พร้อมระบบติดตาม timestamp และ execution history แบบครบถ้วน
+เอกสารนี้สรุปวิธีจัดการ schema ของ **Catalog Promotions API** ภายใต้แนวทาง Hexagonal Architecture โดยใช้ TypeORM + custom migrations history
 
-## Configuration
-Configuration ทั้งหมดอยู่ในไฟล์:
-- `src/configs/typeorm.config.ts` - หลัก configuration
-- `src/databases/data-source.ts` - DataSource สำหรับ migrations
+## 🧭 Overview
+- ใช้ TypeORM CLI (ผ่านสคริปต์ใน `package.json`) จัดการ migrations
+- เก็บไฟล์ migrations ไว้ที่ `src/databases/migrations`
+- มีตาราง `migrations_history` สำหรับบันทึกเวลา/ผลการรันแต่ละ migration
 
-## Available Commands
+## ⚙️ Configuration Files
+| File | Description |
+|------|-------------|
+| `src/configs/typeorm.config.ts` | รวมการตั้งค่าเชื่อมต่อฐานข้อมูล + entities + migrations |
+| `src/databases/data-source.ts` | DataSource ที่ CLI ใช้ตอนรัน migrations |
 
-### Migration Commands
+> **ค่าเชื่อมต่อฐานข้อมูล** ดูตัวอย่างใน `env.example`
+
+## 🧾 CLI Commands
+ใช้ `pnpm` เป็นหลัก ทุกคำสั่งต้องรันหลัง `pnpm install`
+
 ```bash
-# สร้าง migration ใหม่จาก entity changes
-npm run migration:generate -- src/databases/migrations/MigrationName
+# สร้าง migration ใหม่จาก entity ที่แก้ไข
+pnpm run migration:generate src/databases/migrations/MyMigrationName
 
-# สร้าง migration file เปล่า
-npm run migration:create -- src/databases/migrations/MigrationName
+# สร้างไฟล์ migration เปล่า
+pnpm run migration:create src/databases/migrations/MyMigrationName
 
-# รัน migrations ทั้งหมด
-npm run migration:run
+# ใช้งานจริง
+pnpm run migration:run          # apply migrations ทั้งหมด
+pnpm run migration:revert       # rollback migration ล่าสุด
+pnpm run migration:show         # list migrations + status
 
-# ย้อนกลับ migration ล่าสุด
-npm run migration:revert
+# คำสั่งเสริม
+pnpm run schema:drop            # ล้าง schema (dev only)
+pnpm run schema:sync            # sync ตาม entity (dev only)
 
-# ดู migration status
-npm run migration:show
+# utility scripts
+pnpm run db:reset               # drop + run migrations ใหม่
+pnpm run db:status              # ดูสถานะ migrations_history
+pnpm run db:stats               # รายงานสถิติการรัน migrations
 ```
 
-### Schema Commands
-```bash
-# ลบฐานข้อมูลทั้งหมด
-npm run schema:drop
+## 📂 Current Migrations (`src/databases/migrations`)
+| Timestamp | File | Summary |
+|-----------|------|---------|
+| 1756391700001 | `20250828001-create-users-table.ts` | ตาราง `users` |
+| 1756391700003 | `20250828001-create-custom-migrations-history-table.ts` | ตาราง `migrations_history` สำหรับ tracking |
+| 1756391700004 | `20250828001-create-promotions-table.ts` | ตาราง `promotions` + indexes |
+| 1759313081726 | `DropRedundantPromotionsPriorityIndex.ts` | cleanup index ซ้ำของ promotions |
+| 1759318523144 | `CreatePromotionRulesTable.ts` | ตาราง `promotion_rules` |
+| 1759318853436 | `DropRedundantPromotionRulesPromotionIdIndex.ts` | cleanup index promotion_rules |
+| 1759320548075 | `CreateProductsTable.ts` | ตาราง `products` + indexes |
+| 1759329810710 | `CreateCategoriesTable.ts` | ตาราง `categories` + nested set metadata |
+| 1759331903398 | `CreateProductCategoriesTable.ts` | ตารางเชื่อม product ↔ category |
+| 1759334773676 | `CreatePromotionApplicableProductsTable.ts` | ตารางผูก promotion ↔ product |
+| 1759335819053 | `CreatePromotionApplicableCategoriesTable.ts` | ตารางผูก promotion ↔ category |
+| 1759336265326 | `AddForeignKeysToProductCategoriesTable.ts` | FK constraints สำหรับ product_categories |
+| 1759336631142 | `AddForeignKeysToPromotionApplicableProductsTable.ts` | FK constraints สำหรับ promotion_applicable_products |
+| 1759336875059 | `AddForeignKeysToPromotionApplicableCategoriesTable.ts` | FK constraints สำหรับ promotion_applicable_categories |
+| 1759337162032 | `AddForeignKeyToCategoriesParentId.ts` | FK self reference ตัว parent |
+| 1759371525447 | `CategoriesAncestorsArray.ts` | เพิ่ม column `ancestors` (uuid[]) |
+| 1759374417899 | `AddTreeIdToCategories_20251002.ts` | เพิ่ม column `tree_id` |
 
-# Sync schema (development only)
-npm run schema:sync
-```
+> **Note:** ตรวจสอบชื่อไฟล์/ timestamp ทุกครั้งก่อนสร้าง migration ใหม่เพื่อเลี่ยง conflict
 
-### Utility Commands
-```bash
-# Reset ฐานข้อมูลทั้งหมดและรัน migrations ใหม่
-npm run db:reset
-
-# ตรวจสอบสถานะ migrations พร้อม history
-npm run db:status
-
-# ดูสถิติ migrations แบบละเอียด
-npm run db:stats
-```
-
-## Migration Files
-อยู่ใน `src/databases/migrations/`
-
-### Current Migrations
-1. `1756391900901-CreateUsersTable.ts` - สร้าง users table
-   - uuid (Primary Key)
-   - email (Unique)
-   - password
-   - createdAt, updatedAt
-
-2. `1756391900902-CreateExpensesTable.ts` - สร้าง expenses table
-   - uuid (Primary Key)
-   - title, amount, date, category, notes
-   - user_id (Foreign Key → users.uuid)
-   - createdAt, updatedAt
-   - Indexes: user_id, user_id+category, user_id+date, user_id+category+date
-
-3. `1756391900903-CreateCustomMigrationsHistoryTable.ts` - สร้าง enhanced migrations_history table
-   - Enhanced tracking พร้อม timestamp และ execution details
-
-## Enhanced Migration Tracking
-
-### Custom Migrations History Table
-ระบบใหม่ใช้ตาราง `migrations_history` แทน `migrations` มาตรฐาน พร้อมฟิลด์เพิ่มเติม:
-
-- `id` - Primary Key
-- `timestamp` - Migration timestamp (เดิม)
-- `name` - Migration name (เดิม) 
-- `executed_at` - วันเวลาที่รัน migration (ใหม่)
-- `execution_time` - เวลาที่ใช้ในการ execute (milliseconds)
-- `success` - สถานะการทำงานสำเร็จหรือไม่
-- `error_message` - ข้อความ error (หากมี)
-- `created_at` - วันเวลาที่สร้าง record
-- `updated_at` - วันเวลาที่อัปเดท record ล่าสุด
-
-## Workflow
-
+## 📝 Workflow
 ### Development
-1. แก้ไข Entity files
-2. Generate migration: `npm run migration:generate -- src/databases/migrations/YourMigrationName`
-3. Review generated migration
-4. Run migration: `npm run migration:run`
+1. แก้ entity หรือ domain ที่เกี่ยวข้อง
+2. `pnpm run migration:generate src/databases/migrations/<Name>`
+3. ตรวจไฟล์ที่ได้ (index, FK, default)
+4. `pnpm run migration:run`
+5. เพิ่ม unit test/seed หากจำเป็น
 
 ### Production
-1. Review all migrations
-2. Run: `npm run migration:run`
+1. ตรวจสอบ migration คงค้างใน repo ก่อน deploy
+2. สำรองฐานข้อมูล
+3. `pnpm run migration:run`
+4. ตรวจ `pnpm run db:status` ให้เห็นว่า success = true ทุกตัว
 
-### การ Setup Database ใหม่
+### Setup ฐานข้อมูลใหม่
 ```bash
-# วิธีที่ 1: ใช้ migrations (แนะนำ)
-npm run migration:run
+# วิธีปกติ (แนะนำ)
+pnpm run migration:run
 
-# วิธีที่ 2: Reset ทั้งหมด (development only)
-npm run db:reset
+# ถ้าต้อง reset ทั้งหมด (dev เท่านั้น)
+pnpm run db:reset
 ```
 
-## Environment Variables
+## 🌱 Environment Variables
 ```env
 DB_DIALECT=postgres
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
 DB_PASSWORD=your_password
-DB_DATABASE=expense_tracker_db
+DB_DATABASE=catalog_promotions_dev
 ```
 
-## Best Practices
-1. ใช้ descriptive names สำหรับ migration files
-2. Review migration files ก่อน run production
-3. สำรอง database ก่อนรัน migrations ใน production
-4. ไม่แก้ไข migration files ที่รันไปแล้ว
-5. ใช้ transactions ใน complex migrations
+## ✅ Best Practices
+1. ตั้งชื่อ migration ให้สื่อความหมาย (เช่น `AddIndexTo...`) และใช้ timestamp อัตโนมัติจาก CLI
+2. อย่าแก้ไข migration ที่ถูก deploy แล้ว ให้สร้าง migration ใหม่เสมอ
+3. ใช้ transaction ใน migration ที่แก้ไขข้อมูลหลายตาราง
+4. เพิ่ม/ลบ indexes อย่างมีเหตุผล (ดู `docs/ai-summaries/*index*.md`)
+5. รัน `pnpm test` หลัง migration เพื่อยืนยัน domain behavior
 
-## Troubleshooting
+## ❗ Troubleshooting
+- **Migration fail** → ดูข้อความ error, ใช้ `pnpm run migration:revert` เพื่อย้อน, ตรวจสอบไฟล์และรันใหม่
+- **Entity mismatch** → `pnpm run migration:generate src/databases/migrations/FixMismatch`
+- **ดูประวัติ** → `pnpm run db:status` หรือ `pnpm run db:stats` จะบอกเวลารัน, ข้อผิดพลาด
+- **ต้องรีเซ็ตฐานข้อมูล** (dev) → `pnpm run db:reset`
 
-### หาก migration ล้มเหลว
-```bash
-# ดูสถานะปัจจุบัน
-npm run migration:show
+## 🗂️ Custom history table (`migrations_history`)
+ฟิลด์หลัก
+- `id`, `timestamp`, `name`
+- `executed_at`, `execution_time` (ms)
+- `success`, `error_message`
+- `created_at`, `updated_at`
 
-# ย้อนกลับ migration ล่าสุด
-npm run migration:revert
-```
+ช่วยให้
+- audit log ว่าใคร/เมื่อไร
+- ติดตาม migration ที่ล้มเหลวได้ง่าย
+- ดู performance ของการรัน migrations
 
-### หาก entity ไม่ตรงกับ database
-```bash
-# Generate migration ใหม่
-npm run migration:generate -- src/databases/migrations/FixEntityMismatch
-```
-
-### ดู Migration Statistics
-```bash
-# ดูสถิติการรัน migrations
-npm run db:stats
-
-# ดูสถานะและ history
-npm run db:status
-```
-
-### Reset database (development only)
-```bash
-npm run db:reset
-```
-
-## Migration History Features
-
-### Automatic Tracking
-- ทุก migration จะถูก log พร้อม timestamp
-- บันทึกเวลาที่ใช้ในการ execute
-- ติดตามสถานะสำเร็จ/ล้มเหลว
-- เก็บ error messages หากเกิดปัญหา
-
-### Statistics Available
-- จำนวน migrations ทั้งหมด
-- อัตราความสำเร็จ
-- เวลาเฉลี่ยในการ execute
-- Migration แรกและล่าสุด
-
-### Enhanced Error Handling
-- บันทึก error details อัตโนมัติ
-- แสดงประวัติ failures
-- ติดตาม execution performance
+---
+หากปรับ schema ใหม่ อย่าลืมอัปเดต README และทดสอบ workflow ด้วย `catalog.http` + Swagger เพื่อให้ฐานข้อมูลอยู่ในสภาพพร้อมใช้งานกับฟีเจอร์ promotion engine เสมอครับ 🙌
