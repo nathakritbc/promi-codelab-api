@@ -2,10 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import type {
   CategoryCreatedAt,
   CategoryId,
-  CategoryLft,
   CategoryName,
   CategoryParentId,
-  CategoryRgt,
   CategoryUpdatedAt,
 } from 'src/categories/applications/domains/category.domain';
 import type { Status } from 'src/types/utility.type';
@@ -21,10 +19,7 @@ export class CategoryResponseDto {
   parentId?: CategoryParentId;
 
   @ApiProperty()
-  lft: CategoryLft;
-
-  @ApiProperty()
-  rgt: CategoryRgt;
+  ancestors: string[];
 
   @ApiProperty()
   status: Status;

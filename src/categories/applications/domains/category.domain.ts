@@ -1,20 +1,19 @@
 import { EStatus, type Brand, type CreatedAt, type Status, type UpdatedAt } from 'src/types/utility.type';
-
+import { v4 as uuid } from 'uuid';
 // Branded types for type safety
 export type CategoryId = Brand<string, 'CategoryId'>;
 export type CategoryName = Brand<string, 'CategoryName'>;
 export type CategoryParentId = Brand<string, 'CategoryParentId'>;
-export type CategoryLft = Brand<number, 'CategoryLft'>;
-export type CategoryRgt = Brand<number, 'CategoryRgt'>;
 export type CategoryCreatedAt = Brand<CreatedAt, 'CategoryCreatedAt'>;
 export type CategoryUpdatedAt = Brand<UpdatedAt, 'CategoryUpdatedAt'>;
+export type CategoryTreeId = Brand<string, 'CategoryTreeId'>;
 
 export interface ICategory {
   uuid: CategoryId;
   name: CategoryName;
   parentId?: CategoryParentId;
-  lft: CategoryLft;
-  rgt: CategoryRgt;
+  ancestors: string[];
+  treeId: CategoryTreeId;
   status: Status;
   createdAt?: CategoryCreatedAt;
   updatedAt?: CategoryUpdatedAt;
@@ -24,13 +23,27 @@ export class Category implements ICategory {
   uuid: CategoryId;
   name: CategoryName;
   parentId?: CategoryParentId;
-  lft: CategoryLft;
-  rgt: CategoryRgt;
   status: Status;
+  ancestors: string[];
+  treeId: CategoryTreeId;
   createdAt?: CategoryCreatedAt;
   updatedAt?: CategoryUpdatedAt;
 
   // Business logic methods
+
+  createRootCategory(): void {
+    const categoryId = uuid();
+    const createdAtDateTime = new Date();
+
+    this.uuid = categoryId as CategoryId;
+    this.parentId = undefined;
+    this.ancestors = [];
+    this.status = EStatus.ACTIVE as Status;
+    this.createdAt = createdAtDateTime as CategoryCreatedAt;
+    this.updatedAt = createdAtDateTime as CategoryUpdatedAt;
+    this.treeId = categoryId as CategoryTreeId;
+  }
+
   isActive(): boolean {
     return this.status === (EStatus.ACTIVE as Status);
   }
@@ -40,7 +53,7 @@ export class Category implements ICategory {
   }
 
   hasChildren(): boolean {
-    return this.rgt > this.lft + 1;
+    return this.ancestors.length > 0;
   }
 
   getDepth(): number {
@@ -62,6 +75,6 @@ export class Category implements ICategory {
   }
 
   getNodeSize(): number {
-    return this.rgt - this.lft + 1;
+    return this.ancestors.length;
   }
 }

@@ -1,10 +1,9 @@
 import type {
   CategoryCreatedAt,
   CategoryId,
-  CategoryLft,
   CategoryName,
   CategoryParentId,
-  CategoryRgt,
+  CategoryTreeId,
   CategoryUpdatedAt,
 } from 'src/categories/applications/domains/category.domain';
 import type { Status } from 'src/types/utility.type';
@@ -44,11 +43,15 @@ export class CategoryEntity {
   @OneToMany(() => CategoryEntity, (category) => category.parent)
   children?: CategoryEntity[];
 
-  @Column({ type: 'int' })
-  lft: CategoryLft;
+  @Column({
+    type: 'uuid',
+    array: true,
+    default: () => `'{}'::uuid[]`,
+  })
+  ancestors: string[];
 
-  @Column({ type: 'int' })
-  rgt: CategoryRgt;
+  @Column({ type: 'uuid', name: 'tree_id' })
+  treeId!: CategoryTreeId;
 
   @Column({ type: 'varchar', default: 'active' })
   status: Status;

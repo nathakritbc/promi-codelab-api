@@ -17,10 +17,8 @@ import { Builder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type {
   CategoryId,
-  CategoryLft,
   CategoryName,
   CategoryParentId,
-  CategoryRgt,
   ICategory,
 } from 'src/categories/applications/domains/category.domain';
 import { CreateCategoryUseCase } from 'src/categories/applications/usecases/createCategory.usecase';
@@ -54,9 +52,8 @@ export class CategoryController {
     const command = Builder<ICategory>()
       .name(createCategoryDto.name)
       .parentId(createCategoryDto.parentId)
-      .lft(createCategoryDto.lft)
-      .rgt(createCategoryDto.rgt)
-      .status((createCategoryDto.status || EStatus.ACTIVE) as unknown as Status)
+      .ancestors(createCategoryDto.ancestors || [])
+      .status((createCategoryDto.status || EStatus.ACTIVE) as Status)
       .build();
     return this.createCategoryUseCase.execute(command);
   }
@@ -114,8 +111,7 @@ export class CategoryController {
       .uuid(id)
       .name(updateCategoryDto.name as CategoryName)
       .parentId(updateCategoryDto.parentId as CategoryParentId)
-      .lft(updateCategoryDto.lft as CategoryLft)
-      .rgt(updateCategoryDto.rgt as CategoryRgt)
+      .ancestors(updateCategoryDto.ancestors as string[])
       .status(updateCategoryDto.status as unknown as Status)
       .build();
     return this.updateCategoryByIdUseCase.execute(command);

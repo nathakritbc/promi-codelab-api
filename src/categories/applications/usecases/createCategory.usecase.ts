@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ICategory } from '../domains/category.domain';
+import { Builder } from 'builder-pattern';
+import { Category, ICategory } from '../domains/category.domain';
 import type { CategoryRepository } from '../ports/category.repository';
 import { categoryRepositoryToken } from '../ports/category.repository';
 
@@ -11,6 +12,15 @@ export class CreateCategoryUseCase {
   ) {}
 
   async execute(category: ICategory): Promise<ICategory> {
-    return this.categoryRepository.createCategory(category);
+    const categoryInput = Builder(Category)
+      .name(category.name)
+      .ancestors(category.ancestors)
+      .status(category.status)
+      .build();
+    categoryInput.createRootCategory();
+
+    console.log('categoryInput', categoryInput);
+
+    return this.categoryRepository.createCategory(categoryInput);
   }
 }

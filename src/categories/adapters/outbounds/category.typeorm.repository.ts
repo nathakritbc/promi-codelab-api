@@ -7,10 +7,8 @@ import { paginateQueryBuilder, PaginationParams } from '../../../utils/paginatio
 import type {
   CategoryCreatedAt,
   CategoryId,
-  CategoryLft,
   CategoryName,
   CategoryParentId,
-  CategoryRgt,
   CategoryUpdatedAt,
   ICategory,
 } from '../../applications/domains/category.domain';
@@ -97,7 +95,7 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
   async getCategoriesByParentId({ parentId }: { parentId: string }): Promise<ICategory[]> {
     const categories = await this.categoryModel.tx.getRepository(CategoryEntity).find({
       where: { parentId: parentId as CategoryParentId },
-      order: { lft: 'ASC' },
+      // order: { lft: 'ASC' },
     });
 
     return categories.map((category) => CategoryTypeOrmRepository.toDomain(category));
@@ -114,12 +112,12 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
   }
 
   public static toDomain(categoryEntity: CategoryEntity): ICategory {
+    const ancestors = categoryEntity.ancestors;
     return Builder<ICategory>()
       .uuid(categoryEntity.uuid as CategoryId)
       .name(categoryEntity.name as CategoryName)
       .parentId(categoryEntity.parentId as CategoryParentId)
-      .lft(categoryEntity.lft as CategoryLft)
-      .rgt(categoryEntity.rgt as CategoryRgt)
+      .ancestors(ancestors as string[])
       .status(categoryEntity.status as Status)
       .createdAt(categoryEntity.createdAt as CategoryCreatedAt)
       .updatedAt(categoryEntity.updatedAt as CategoryUpdatedAt)

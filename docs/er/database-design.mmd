@@ -57,8 +57,9 @@ erDiagram
       uuid id PK
       string name
       uuid parent_id FK "nullable"
-      int lft
-      int rgt
+      %% int lft
+      %% int rgt
+      uuid ancestors "jsonb uuid[] NOT NULL DEFAULT '{}'"
     }
 
 

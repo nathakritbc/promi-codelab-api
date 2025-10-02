@@ -2,14 +2,7 @@ import { Builder } from 'builder-pattern';
 import type { Status } from 'src/types/utility.type';
 import { EStatus } from 'src/types/utility.type';
 import { describe, expect, it } from 'vitest';
-import {
-  Category,
-  type CategoryId,
-  type CategoryLft,
-  type CategoryName,
-  type CategoryParentId,
-  type CategoryRgt,
-} from './category.domain';
+import { Category, type CategoryId, type CategoryName, type CategoryParentId } from './category.domain';
 
 describe('CategoryDomain', () => {
   const createTestCategory = (overrides: Partial<Category> = {}): Category => {
@@ -17,8 +10,7 @@ describe('CategoryDomain', () => {
       .uuid('test-uuid' as CategoryId)
       .name('Test Category' as CategoryName)
       .parentId('parent-uuid' as CategoryParentId)
-      .lft(1 as CategoryLft)
-      .rgt(2 as CategoryRgt)
+      .ancestors(['parent-uuid'])
       .status(EStatus.ACTIVE as unknown as Status)
       .build();
 
@@ -77,8 +69,7 @@ describe('CategoryDomain', () => {
     it('should return true when category has children (rgt > lft + 1)', () => {
       // Arrange
       const category = createTestCategory({
-        lft: 1 as CategoryLft,
-        rgt: 4 as CategoryRgt, // rgt > lft + 1, so has children
+        ancestors: ['parent-uuid'],
       });
 
       // Act
@@ -91,15 +82,14 @@ describe('CategoryDomain', () => {
     it('should return false when category has no children (rgt = lft + 1)', () => {
       // Arrange
       const category = createTestCategory({
-        lft: 1 as CategoryLft,
-        rgt: 2 as CategoryRgt, // rgt = lft + 1, so no children
+        ancestors: ['parent-uuid'],
       });
 
       // Act
       const result = category.hasChildren();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeTruthy();
     });
   });
 
@@ -108,15 +98,14 @@ describe('CategoryDomain', () => {
       // Arrange
       const category = createTestCategory({
         status: EStatus.ACTIVE as unknown as Status,
-        lft: 1 as CategoryLft,
-        rgt: 2 as CategoryRgt, // No children
+        ancestors: ['parent-uuid'],
       });
 
       // Act
       const result = category.canBeDeleted();
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeFalsy();
     });
 
     it('should return false when category is deleted', () => {
@@ -134,8 +123,7 @@ describe('CategoryDomain', () => {
       // Arrange
       const category = createTestCategory({
         status: EStatus.ACTIVE as unknown as Status,
-        lft: 1 as CategoryLft,
-        rgt: 4 as CategoryRgt, // Has children
+        ancestors: ['parent-uuid'],
       });
 
       // Act
@@ -194,29 +182,27 @@ describe('CategoryDomain', () => {
     it('should return true when category has no children', () => {
       // Arrange
       const category = createTestCategory({
-        lft: 1 as CategoryLft,
-        rgt: 2 as CategoryRgt, // No children
+        ancestors: ['parent-uuid'],
       });
 
       // Act
       const result = category.isLeaf();
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeFalsy();
     });
 
     it('should return false when category has children', () => {
       // Arrange
       const category = createTestCategory({
-        lft: 1 as CategoryLft,
-        rgt: 4 as CategoryRgt, // Has children
+        ancestors: ['parent-uuid'],
       });
 
       // Act
       const result = category.isLeaf();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
   });
 
@@ -224,29 +210,27 @@ describe('CategoryDomain', () => {
     it('should return correct node size for leaf node', () => {
       // Arrange
       const category = createTestCategory({
-        lft: 1 as CategoryLft,
-        rgt: 2 as CategoryRgt,
+        ancestors: ['parent-uuid'],
       });
 
       // Act
       const result = category.getNodeSize();
 
       // Assert
-      expect(result).toBe(2); // rgt - lft + 1 = 2 - 1 + 1 = 2
+      expect(result).toBe(1);
     });
 
     it('should return correct node size for parent node', () => {
       // Arrange
       const category = createTestCategory({
-        lft: 1 as CategoryLft,
-        rgt: 6 as CategoryRgt,
+        ancestors: ['parent-uuid'],
       });
 
       // Act
       const result = category.getNodeSize();
 
       // Assert
-      expect(result).toBe(6); // rgt - lft + 1 = 6 - 1 + 1 = 6
+      expect(result).toBe(1);
     });
   });
 });

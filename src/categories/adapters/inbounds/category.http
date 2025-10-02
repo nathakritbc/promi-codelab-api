@@ -1,14 +1,13 @@
-@host = http://localhost:3000
-
 ### Login
 # @name login
 POST {{host}}/auth/login
 content-type: application/json
 
 {
-  "username": "user2",
-  "password": "12345678"
+  "email": "john@example.com",
+  "password": "password123"
 }
+###
 
 @myAccessToken = {{login.response.body.accessToken}}
 
@@ -19,13 +18,12 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "name": "Electronics",
-  "lft": 1,
-  "rgt": 2,
+  "name": "Electronics2",
+  "ancestors": [],
   "status": "active"
 }
 
-@rootCategoryId = {{createRootCategory.response.body.uuid}}
+# @rootCategoryId = {{createRootCategory.response.body.uuid}}
 
 ### Create Sub Category
 # @name createSubCategory
@@ -36,8 +34,6 @@ authorization: Bearer {{myAccessToken}}
 {
   "name": "Smartphones",
   "parentId": "{{rootCategoryId}}",
-  "lft": 2,
-  "rgt": 3,
   "status": "active"
 }
 
@@ -74,8 +70,7 @@ authorization: Bearer {{myAccessToken}}
 
 {
   "name": "Electronics & Gadgets",
-  "lft": 1,
-  "rgt": 4
+  "ancestors": []
 }
 
 ### Update Category Status to Inactive
@@ -98,8 +93,7 @@ authorization: Bearer {{myAccessToken}}
 
 {
   "name": "Clothing",
-  "lft": 5,
-  "rgt": 6,
+  "ancestors": [],
   "status": "active"
 }
 
