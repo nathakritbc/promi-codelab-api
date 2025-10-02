@@ -13,14 +13,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Builder } from 'builder-pattern';
+import { Builder, StrictBuilder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type {
   IProduct,
+  ProductCode,
   ProductDescription,
   ProductId,
   ProductName,
   ProductPrice,
+  ProductUpdatedAt,
 } from 'src/products/applications/domains/product.domain';
 import { CreateProductUseCase } from 'src/products/applications/usecases/createProduct.usecase';
 import { DeleteProductByIdUseCase } from 'src/products/applications/usecases/deleteProductById.usecase';
@@ -98,14 +100,16 @@ export class ProductController {
   @Put(':id')
   @Transactional()
   update(@Param('id', ParseUUIDPipe) id: ProductId, @Body() updateProductDto: UpdateProductDto): Promise<IProduct> {
-    const command = Builder<IProduct>()
+    const product = StrictBuilder<IProduct>()
       .uuid(id)
       .name(updateProductDto.name as ProductName)
+      .code(updateProductDto.code as ProductCode)
       .description(updateProductDto.description as ProductDescription)
       .price(updateProductDto.price as ProductPrice)
-      .status(updateProductDto.status as unknown as Status)
+      .status(updateProductDto.status as Status)
+      .updatedAt(new Date() as ProductUpdatedAt)
       .build();
-    return this.updateProductByIdUseCase.execute(command);
+    return this.updateProductByIdUseCase.execute(product);
   }
 
   @ApiOperation({ summary: 'Delete a product' })
