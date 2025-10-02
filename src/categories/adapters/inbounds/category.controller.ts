@@ -30,7 +30,7 @@ import { GetCategoryByIdUseCase } from 'src/categories/applications/usecases/get
 import { UpdateCategoryByIdUseCase } from 'src/categories/applications/usecases/updateCategoryById.usecase';
 import { EStatus, type Status } from 'src/types/utility.type';
 import { CreateCategoryDto } from './dto/createCategory.dto';
-import type { UpdateCategoryDto } from './dto/updateCategory.dto';
+import { UpdateCategoryDto } from './dto/updateCategory.dto';
 
 @ApiTags('Categories')
 @UseGuards(JwtAuthGuard)

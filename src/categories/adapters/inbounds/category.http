@@ -43,6 +43,10 @@ authorization: Bearer {{myAccessToken}}
 GET {{host}}/categories?status=active&isRoot=true&page=1&limit=10
 authorization: Bearer {{myAccessToken}}
 
+### Get ALL Categories with isRoot true
+GET {{host}}/categories?isRoot=true
+authorization: Bearer {{myAccessToken}}
+
 ### Get All Categories with Search
 GET {{host}}/categories?search=Electronics
 authorization: Bearer {{myAccessToken}}
