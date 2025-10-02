@@ -35,6 +35,7 @@ import { promotionRepositoryToken } from './applications/ports/promotion.reposit
     CreatePromotionUseCase,
     GetPromotionByIdUseCase,
     GetAllPromotionsUseCase,
+    promotionRepositoryToken,
   ],
 })
 export class PromotionsModule {}

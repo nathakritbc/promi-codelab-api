@@ -36,6 +36,7 @@ import { productRepositoryToken } from './applications/ports/product.repository'
     CreateProductUseCase,
     GetProductByIdUseCase,
     GetAllProductsUseCase,
+    productRepositoryToken,
   ],
 })
 export class ProductsModule {}

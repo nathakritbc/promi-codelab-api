@@ -38,6 +38,7 @@ import { promotionRuleRepositoryToken } from './applications/ports/promotionRule
     GetPromotionRuleByIdUseCase,
     GetAllPromotionRulesUseCase,
     GetPromotionRulesByPromotionIdUseCase,
+    promotionRuleRepositoryToken,
   ],
 })
 export class PromotionRulesModule {}

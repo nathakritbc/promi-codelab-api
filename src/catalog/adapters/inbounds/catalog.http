@@ -1,0 +1,221 @@
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+###
+
+@myAccessToken = {{login.response.body.accessToken}}
+ 
+### ----- Sample Data Setup -------------------------------------------------
+
+### Create Monitor Category
+# @name createMonitorCategory
+POST {{host}}/categories
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "name": "Monitors",
+  "status": "active"
+}
+###
+
+@monitorCategoryId = {{createMonitorCategory.response.body.uuid}}
+
+### Create Computer Accessories Category
+# @name createAccessoriesCategory
+POST {{host}}/categories
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "name": "Computer Accessories",
+  "status": "active"
+}
+###
+
+@accessoriesCategoryId = {{createAccessoriesCategory.response.body.uuid}}
+
+### Create Products
+# @name createMonitorProduct
+POST {{host}}/products
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "code": "MON-001",
+  "name": "4K Monitor",
+  "description": "27-inch UHD monitor",
+  "price": 12000,
+  "status": "active"
+}
+###
+
+@monitorProductId = {{createMonitorProduct.response.body.uuid}}
+
+# @name createKeyboardProduct
+POST {{host}}/products
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "code": "KEY-001",
+  "name": "Mechanical Keyboard",
+  "description": "RGB TKL keyboard",
+  "price": 2500,
+  "status": "active"
+}
+###
+
+@keyboardProductId = {{createKeyboardProduct.response.body.uuid}}
+
+# @name createMouseProduct
+POST {{host}}/products
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "code": "MOU-001",
+  "name": "Wireless Mouse",
+  "description": "Low-latency wireless mouse",
+  "price": 900,
+  "status": "active"
+}
+###
+
+@mouseProductId = {{createMouseProduct.response.body.uuid}}
+
+### Link Products to Categories
+POST {{host}}/product-categories
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "productId": "{{monitorProductId}}",
+  "categoryId": "{{monitorCategoryId}}",
+  "status": "active"
+}
+###
+
+POST {{host}}/product-categories
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "productId": "{{keyboardProductId}}",
+  "categoryId": "{{accessoriesCategoryId}}",
+  "status": "active"
+}
+###
+
+POST {{host}}/product-categories
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "productId": "{{mouseProductId}}",
+  "categoryId": "{{accessoriesCategoryId}}",
+  "status": "active"
+}
+###
+
+### Create Promotions
+# @name createMonitorPromotion
+POST {{host}}/promotions
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "name": "Monitor Mega Sale",
+  "status": "active",
+  "startsAt": "2025-01-01T00:00:00Z",
+  "endsAt": "2025-12-31T23:59:59Z",
+  "discountType": "Percent",
+  "discountValue": 15,
+  "maxDiscountAmount": 1500,
+  "priority": 5
+}
+###
+
+@monitorPromotionId = {{createMonitorPromotion.response.body.uuid}}
+
+# @name createAccessoryPromotion
+POST {{host}}/promotions
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "name": "Accessory Happy Hour",
+  "status": "active",
+  "startsAt": "2025-01-01T00:00:00Z",
+  "endsAt": "2025-12-31T23:59:59Z",
+  "discountType": "Fixed",
+  "discountValue": 200,
+  "priority": 3
+}
+###
+
+@accessoryPromotionId = {{createAccessoryPromotion.response.body.uuid}}
+
+# @name createKeyboardFlashPromotion
+POST {{host}}/promotions
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "name": "Keyboard Flash Deal",
+  "status": "active",
+  "startsAt": "2025-01-01T00:00:00Z",
+  "endsAt": "2025-06-30T23:59:59Z",
+  "discountType": "Percent",
+  "discountValue": 10,
+  "priority": 7
+}
+###
+
+@keyboardPromotionId = {{createKeyboardFlashPromotion.response.body.uuid}}
+
+### Attach Promotions to Categories / Products
+POST {{host}}/promotion-applicable-categories
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "promotionId": "{{monitorPromotionId}}",
+  "categoryId": "{{monitorCategoryId}}",
+  "includeChildren": true,
+  "status": "active"
+}
+###
+
+POST {{host}}/promotion-applicable-categories
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "promotionId": "{{accessoryPromotionId}}",
+  "categoryId": "{{accessoriesCategoryId}}",
+  "includeChildren": false,
+  "status": "active"
+}
+###
+
+POST {{host}}/promotion-applicable-products
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "promotionId": "{{keyboardPromotionId}}",
+  "productId": "{{keyboardProductId}}",
+  "status": "active"
+}
+###
+
+### Get All Catalog Products
+GET {{host}}/catalog/products
+authorization: Bearer {{myAccessToken}}

@@ -38,6 +38,7 @@ import { categoryRepositoryToken } from './applications/ports/category.repositor
     GetCategoryByIdUseCase,
     GetAllCategoriesUseCase,
     GetCategoriesByParentIdUseCase,
+    categoryRepositoryToken,
   ],
 })
 export class CategoriesModule {}

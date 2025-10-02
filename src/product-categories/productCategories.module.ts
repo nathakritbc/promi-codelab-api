@@ -44,6 +44,7 @@ import { productCategoryRepositoryToken } from './applications/ports/productCate
     GetProductCategoriesByProductIdUseCase,
     GetProductCategoriesByCategoryIdUseCase,
     GetProductCategoryByAssociationUseCase,
+    productCategoryRepositoryToken,
   ],
 })
 export class ProductCategoriesModule {}

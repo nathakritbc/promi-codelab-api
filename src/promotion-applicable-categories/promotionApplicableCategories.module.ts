@@ -44,6 +44,7 @@ import { promotionApplicableCategoryRepositoryToken } from './applications/ports
     GetPromotionApplicableCategoriesByPromotionIdUseCase,
     GetPromotionApplicableCategoriesByCategoryIdUseCase,
     GetPromotionApplicableCategoryByAssociationUseCase,
+    promotionApplicableCategoryRepositoryToken,
   ],
 })
 export class PromotionApplicableCategoriesModule {}

@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ClsModule } from 'nestjs-cls';
 import { LoggerModule } from 'nestjs-pino';
 import { AuthModule } from './auth/auth.module';
+import { CatalogModule } from './catalog/catalog.module';
 import { CategoriesModule } from './categories/categories.module';
 import { configModule } from './configs/app.config';
 import { httpConfig } from './configs/http.config';
@@ -37,6 +38,7 @@ import { UserModule } from './users/user.module';
     PromotionApplicableProductsModule,
     PromotionRulesModule,
     PromotionsModule,
+    CatalogModule,
     UserModule,
   ],
   controllers: [],

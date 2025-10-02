@@ -44,6 +44,7 @@ import { promotionApplicableProductRepositoryToken } from './applications/ports/
     GetPromotionApplicableProductsByPromotionIdUseCase,
     GetPromotionApplicableProductsByProductIdUseCase,
     GetPromotionApplicableProductByAssociationUseCase,
+    promotionApplicableProductRepositoryToken,
   ],
 })
 export class PromotionApplicableProductsModule {}
