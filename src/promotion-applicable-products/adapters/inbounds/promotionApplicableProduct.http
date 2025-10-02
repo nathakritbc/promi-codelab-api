@@ -1,16 +1,16 @@
-@host = http://localhost:3000
-
 ### Login
 # @name login
 POST {{host}}/auth/login
 content-type: application/json
 
 {
-  "username": "user2",
-  "password": "12345678"
+  "email": "john@example.com",
+  "password": "password123"
 }
+###
 
 @myAccessToken = {{login.response.body.accessToken}}
+
 
 ### Create Promotion Applicable Product Association
 # @name createPromotionApplicableProduct
@@ -19,10 +19,12 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "promotionId": "promotion-uuid-123",
-  "productId": "product-uuid-456",
+  "promotionId": "e9b4b19e-094e-439b-9390-6b7346924390",
+  "productId": "6a0aa85d-8b66-4d97-a569-391d270bf727",
   "status": "active"
 }
+
+###
 
 @promotionApplicableProductId = {{createPromotionApplicableProduct.response.body.uuid}}
 
@@ -31,11 +33,11 @@ GET {{host}}/promotion-applicable-products
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Promotion Applicable Products with Filters
-GET {{host}}/promotion-applicable-products?promotionId=promotion-uuid-123&status=active&page=1&limit=10
+GET {{host}}/promotion-applicable-products?promotionId=e9b4b19e-094e-439b-9390-6b7346924390&status=active&page=1&limit=10
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Promotion Applicable Products by Product
-GET {{host}}/promotion-applicable-products?productId=product-uuid-456&status=active
+GET {{host}}/promotion-applicable-products?productId=e9b4b19e-094e-439b-9390-6b7346924390&status=active
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Promotion Applicable Products Sorted by Created Date
@@ -59,12 +61,12 @@ GET {{host}}/promotion-applicable-products/association/promotion-uuid-123/produc
 authorization: Bearer {{myAccessToken}}
 
 ### Update Promotion Applicable Product Status
-PUT {{host}}/promotion-applicable-products/{{promotionApplicableProductId}}
+PUT {{host}}/promotion-applicable-products/7c2e0e71-ee5d-4055-b651-de11e007ba5c
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "status": "inactive"
+  "status": "active"
 }
 
 ### Update Promotion Applicable Product Association
@@ -102,7 +104,7 @@ GET {{host}}/promotion-applicable-products?productId=product-uuid-456&status=act
 authorization: Bearer {{myAccessToken}}
 
 ### Delete Promotion Applicable Product
-DELETE {{host}}/promotion-applicable-products/{{promotionApplicableProductId}}
+DELETE {{host}}/promotion-applicable-products/7c2e0e71-ee5d-4055-b651-de11e007ba5c
 authorization: Bearer {{myAccessToken}}
 
 ### Create Promotion Applicable Product with Duplicate Association (Should Fail)
