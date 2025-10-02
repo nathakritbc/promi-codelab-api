@@ -1,7 +1,7 @@
 ### Login
 # @name login
 POST {{host}}/auth/login
-content-type: application/json
+Content-Type: application/json
 
 {
   "email": "john@example.com",
@@ -13,17 +13,14 @@ content-type: application/json
 
 ### Create Root Category
 # @name createRootCategory
-POST {{host}}/categories
+POST {{host}}/categories/root
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "name": "Electronics2",
-  "ancestors": [],
-  "status": "active"
+  "name": "Cate4999 Update"
 }
 
-# @rootCategoryId = {{createRootCategory.response.body.uuid}}
 
 ### Create Sub Category
 # @name createSubCategory
@@ -33,11 +30,10 @@ authorization: Bearer {{myAccessToken}}
 
 {
   "name": "Smartphones",
-  "parentId": "{{rootCategoryId}}",
+  "ancestors": [],
   "status": "active"
 }
 
-@subCategoryId = {{createSubCategory.response.body.uuid}}
 
 ### Get All Categories
 GET {{host}}/categories

@@ -14,31 +14,25 @@ import { UpdateCategoryByIdUseCase } from './applications/usecases/updateCategor
 // Repository binding
 import { CategoryTypeOrmRepository } from './adapters/outbounds/category.typeorm.repository';
 import { categoryRepositoryToken } from './applications/ports/category.repository';
+import { CreateRootCategoryUseCase } from './applications/usecases/createRootCategory.usecase';
 
 @Module({
   controllers: [CategoryController],
   providers: [
     // Use Cases
     CreateCategoryUseCase,
+    CreateRootCategoryUseCase,
     DeleteCategoryByIdUseCase,
     GetAllCategoriesUseCase,
-    GetCategoryByIdUseCase,
     GetCategoriesByParentIdUseCase,
+    GetCategoryByIdUseCase,
     UpdateCategoryByIdUseCase,
-
     // Repository binding
     {
       provide: categoryRepositoryToken,
       useClass: CategoryTypeOrmRepository,
     },
   ],
-  exports: [
-    // Export use cases if needed by other modules
-    CreateCategoryUseCase,
-    GetCategoryByIdUseCase,
-    GetAllCategoriesUseCase,
-    GetCategoriesByParentIdUseCase,
-    categoryRepositoryToken,
-  ],
+  exports: [categoryRepositoryToken],
 })
 export class CategoriesModule {}

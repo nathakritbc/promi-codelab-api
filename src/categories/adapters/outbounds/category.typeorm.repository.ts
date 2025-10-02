@@ -2,7 +2,9 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 import { Injectable } from '@nestjs/common';
 import { Builder, StrictBuilder } from 'builder-pattern';
-import type { Status } from 'src/types/utility.type';
+import { isEmpty } from 'radash';
+import { EStatus, type Status } from 'src/types/utility.type';
+import { Not } from 'typeorm';
 import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import type {
   CategoryCreatedAt,
@@ -26,7 +28,7 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
   }
 
   async deleteCategoryById({ id }: { id: CategoryId }): Promise<void> {
-    await this.categoryModel.tx.getRepository(CategoryEntity).delete({ uuid: id });
+    await this.categoryModel.tx.getRepository(CategoryEntity).update({ uuid: id }, { status: EStatus.DELETED });
   }
 
   async getAllCategories(params: GetAllCategoriesQuery): Promise<GetAllCategoriesReturnType> {
@@ -34,6 +36,8 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
 
     const repo = this.categoryModel.tx.getRepository(CategoryEntity);
     const qb = repo.createQueryBuilder('category');
+
+    qb.andWhere('category.status != :status', { status: EStatus.DELETED });
 
     // Apply filters
     if (search) {
@@ -84,7 +88,7 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
 
   async getCategoryById({ id }: { id: CategoryId }): Promise<ICategory | undefined> {
     const category = await this.categoryModel.tx.getRepository(CategoryEntity).findOne({
-      where: { uuid: id },
+      where: { uuid: id, status: Not(EStatus.DELETED as Status) },
     });
 
     if (!category) return undefined;
@@ -94,11 +98,11 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
 
   async getCategoriesByParentId({ parentId }: { parentId: string }): Promise<ICategory[]> {
     const categories = await this.categoryModel.tx.getRepository(CategoryEntity).find({
-      where: { parentId: parentId as CategoryParentId },
+      where: { parentId: parentId as CategoryParentId, status: Not(EStatus.DELETED as Status) },
       // order: { lft: 'ASC' },
     });
 
-    return categories.map((category) => CategoryTypeOrmRepository.toDomain(category));
+    return isEmpty(categories) ? [] : categories.map((category) => CategoryTypeOrmRepository.toDomain(category));
   }
 
   async updateCategoryById(category: ICategory): Promise<ICategory> {

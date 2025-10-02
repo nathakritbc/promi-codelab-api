@@ -22,6 +22,7 @@ import type {
   ICategory,
 } from 'src/categories/applications/domains/category.domain';
 import { CreateCategoryUseCase } from 'src/categories/applications/usecases/createCategory.usecase';
+import { CreateRootCategoryUseCase } from 'src/categories/applications/usecases/createRootCategory.usecase';
 import { DeleteCategoryByIdUseCase } from 'src/categories/applications/usecases/deleteCategoryById.usecase';
 import { GetAllCategoriesUseCase } from 'src/categories/applications/usecases/getAllCategories.usecase';
 import { GetCategoriesByParentIdUseCase } from 'src/categories/applications/usecases/getCategoriesByParentId.usecase';
@@ -42,6 +43,7 @@ export class CategoryController {
     private readonly updateCategoryByIdUseCase: UpdateCategoryByIdUseCase,
     private readonly getCategoryByIdUseCase: GetCategoryByIdUseCase,
     private readonly getCategoriesByParentIdUseCase: GetCategoriesByParentIdUseCase,
+    private readonly createRootCategoryUseCase: CreateRootCategoryUseCase,
   ) {}
 
   @ApiOperation({ summary: 'Create a category' })
@@ -56,6 +58,15 @@ export class CategoryController {
       .status((createCategoryDto.status || EStatus.ACTIVE) as Status)
       .build();
     return this.createCategoryUseCase.execute(command);
+  }
+
+  @ApiOperation({ summary: 'Create a root category' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'The category has been successfully created.' })
+  @Post('root')
+  @Transactional()
+  createRootCategory(@Body() createCategoryDto: CreateCategoryDto): Promise<ICategory> {
+    const command = Builder<ICategory>().name(createCategoryDto.name).build();
+    return this.createRootCategoryUseCase.execute(command);
   }
 
   @ApiOperation({ summary: 'Get all categories' })

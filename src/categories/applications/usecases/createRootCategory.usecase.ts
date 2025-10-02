@@ -1,26 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Builder } from 'builder-pattern';
-import { Category, CategoryCreatedAt, CategoryUpdatedAt, ICategory } from '../domains/category.domain';
+import { Category, ICategory } from '../domains/category.domain';
 import type { CategoryRepository } from '../ports/category.repository';
 import { categoryRepositoryToken } from '../ports/category.repository';
 
 @Injectable()
-export class CreateCategoryUseCase {
+export class CreateRootCategoryUseCase {
   constructor(
     @Inject(categoryRepositoryToken)
     private readonly categoryRepository: CategoryRepository,
   ) {}
 
   async execute(category: ICategory): Promise<ICategory> {
-    const categoryInput = Builder(Category)
-      .name(category.name)
-      .ancestors(category.ancestors)
-      .status(category.status)
-      .parentId(category.parentId)
-      .treeId(category.treeId)
-      .createdAt(new Date() as CategoryCreatedAt)
-      .updatedAt(new Date() as CategoryUpdatedAt)
-      .build();
+    const categoryInput = Builder(Category).name(category.name).build();
+    categoryInput.createRootCategory();
 
     return this.categoryRepository.createCategory(categoryInput);
   }
