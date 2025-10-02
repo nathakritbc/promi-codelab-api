@@ -2,7 +2,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 import { Injectable } from '@nestjs/common';
 import { Builder, StrictBuilder } from 'builder-pattern';
-import type { Status } from 'src/types/utility.type';
+import { EStatus, type Status } from 'src/types/utility.type';
 import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import type {
   CategoryId,
@@ -37,6 +37,15 @@ export class ProductCategoryTypeOrmRepository implements ProductCategoryReposito
 
     const repo = this.productCategoryModel.tx.getRepository(ProductCategoryEntity);
     const qb = repo.createQueryBuilder('productCategory');
+
+    qb.andWhere('productCategory.status != :deleteStatus', { deleteStatus: EStatus.DELETED });
+
+    // Apply filters
+    if (search) {
+      qb.andWhere('(productCategory.productId ILIKE :search OR productCategory.categoryId ILIKE :search)', {
+        search: `%${search}%`,
+      });
+    }
 
     // Apply filters
     if (productId) {

@@ -41,7 +41,7 @@ export class ProductTypeOrmRepository implements ProductRepository {
     const repo = this.productModel.tx.getRepository(ProductEntity);
     const qb = repo.createQueryBuilder('product');
 
-    qb.andWhere('product.status != :status', { status: EStatus.DELETED });
+    qb.andWhere('product.status != :deleteStatus', { deleteStatus: EStatus.DELETED });
 
     // Apply filters
     if (search) {
