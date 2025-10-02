@@ -135,7 +135,7 @@ export class PromotionRuleController {
   ): Promise<IPromotionRule> {
     const command = Builder<IPromotionRule>()
       .uuid(id)
-      .scope(updatePromotionRuleDto.scope as unknown as PromotionRuleScope)
+      .scope(updatePromotionRuleDto.scope as PromotionRuleScope)
       .minQty(updatePromotionRuleDto.minQty as PromotionRuleMinQty)
       .minAmount(updatePromotionRuleDto.minAmount as PromotionRuleMinAmount)
       .build();
