@@ -38,7 +38,7 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
     const repo = this.categoryModel.tx.getRepository(CategoryEntity);
     const qb = repo.createQueryBuilder('category');
 
-    qb.andWhere('category.status != :status', { status: EStatus.DELETED });
+    qb.andWhere('category.status != :deletedStatus', { deletedStatus: EStatus.DELETED });
 
     // Apply filters
     if (search) {
@@ -47,7 +47,7 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
       });
     }
 
-    if (status) {
+    if (status && status !== EStatus.DELETED) {
       qb.andWhere('category.status = :status', { status });
     }
 
