@@ -117,7 +117,7 @@ export class GetCatalogProductsUseCase {
     return StrictBuilder<GetCatalogProductsReturnType>().result(catalogResults).meta(meta).build();
   }
 
-  private async evaluateProductPromotions({
+  public async evaluateProductPromotions({
     catalogProduct,
     promotionCache,
     promotionRulesCache,
@@ -152,7 +152,7 @@ export class GetCatalogProductsUseCase {
     }
   }
 
-  private async collectProductCategoryHierarchy({
+  public async collectProductCategoryHierarchy({
     productId,
     categoryCache,
   }: {
@@ -183,7 +183,7 @@ export class GetCatalogProductsUseCase {
     return { exactCategoryIds, ancestorCategoryIds };
   }
 
-  private async evaluateCategoryPromotions(params: EvaluateCategoryPromotionsParams): Promise<void> {
+  public async evaluateCategoryPromotions(params: EvaluateCategoryPromotionsParams): Promise<void> {
     const {
       categoryIds,
       requireIncludeChildren,
@@ -241,7 +241,7 @@ export class GetCatalogProductsUseCase {
     }
   }
 
-  private async getCategory(categoryId: string, cache: Map<string, ICategory | null>): Promise<ICategory | null> {
+  public async getCategory(categoryId: string, cache: Map<string, ICategory | null>): Promise<ICategory | null> {
     if (cache.has(categoryId)) {
       return cache.get(categoryId) ?? null;
     }
@@ -252,10 +252,7 @@ export class GetCatalogProductsUseCase {
     return domainCategory;
   }
 
-  private async getPromotion(
-    promotionId: PromotionId,
-    cache: Map<string, IPromotion>,
-  ): Promise<IPromotion | undefined> {
+  public async getPromotion(promotionId: PromotionId, cache: Map<string, IPromotion>): Promise<IPromotion | undefined> {
     const key = String(promotionId);
     if (cache.has(key)) {
       return cache.get(key);
@@ -269,7 +266,7 @@ export class GetCatalogProductsUseCase {
     return promotion ?? undefined;
   }
 
-  private async getPromotionRules(
+  public async getPromotionRules(
     promotionId: PromotionId,
     cache: Map<string, IPromotionRule[]>,
   ): Promise<IPromotionRule[]> {
@@ -285,7 +282,7 @@ export class GetCatalogProductsUseCase {
     return rules ?? [];
   }
 
-  private async getPromotionApplicableCategories(
+  public async getPromotionApplicableCategories(
     categoryId: string,
     cache: Map<string, IPromotionApplicableCategory[]>,
   ): Promise<IPromotionApplicableCategory[]> {
@@ -301,15 +298,15 @@ export class GetCatalogProductsUseCase {
     return associations ?? [];
   }
 
-  private toPromotionApplicableProduct(association: IPromotionApplicableProduct): PromotionApplicableProduct {
+  public toPromotionApplicableProduct(association: IPromotionApplicableProduct): PromotionApplicableProduct {
     return Object.assign(new PromotionApplicableProduct(), association);
   }
 
-  private toPromotionApplicableCategory(association: IPromotionApplicableCategory): PromotionApplicableCategory {
+  public toPromotionApplicableCategory(association: IPromotionApplicableCategory): PromotionApplicableCategory {
     return Object.assign(new PromotionApplicableCategory(), association);
   }
 
-  private toProductCategory(productCategory: IProductCategory): ProductCategory {
+  public toProductCategory(productCategory: IProductCategory): ProductCategory {
     return Object.assign(new ProductCategory(), productCategory);
   }
 }
