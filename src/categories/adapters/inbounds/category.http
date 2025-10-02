@@ -18,7 +18,7 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "name": "Cate4999 Update"
+  "name": "Cate A1 Update"
 }
 
 

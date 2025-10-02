@@ -11,6 +11,7 @@ import type {
   CategoryId,
   CategoryName,
   CategoryParentId,
+  CategoryTreeId,
   CategoryUpdatedAt,
   ICategory,
 } from '../../applications/domains/category.domain';
@@ -120,6 +121,7 @@ export class CategoryTypeOrmRepository implements CategoryRepository {
       .parentId(categoryEntity.parentId as CategoryParentId)
       .ancestors(ancestors as string[])
       .status(categoryEntity.status as Status)
+      .treeId(categoryEntity.treeId as CategoryTreeId)
       .createdAt(categoryEntity.createdAt as CategoryCreatedAt)
       .updatedAt(categoryEntity.updatedAt as CategoryUpdatedAt)
       .build();
