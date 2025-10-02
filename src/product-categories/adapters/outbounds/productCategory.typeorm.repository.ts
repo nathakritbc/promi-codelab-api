@@ -33,19 +33,12 @@ export class ProductCategoryTypeOrmRepository implements ProductCategoryReposito
   }
 
   async getAllProductCategories(params: GetAllProductCategoriesQuery): Promise<GetAllProductCategoriesReturnType> {
-    const { search, sort, order, page, limit, productId, categoryId, status } = params;
+    const { sort, order, page, limit, productId, categoryId, status } = params;
 
     const repo = this.productCategoryModel.tx.getRepository(ProductCategoryEntity);
     const qb = repo.createQueryBuilder('productCategory');
 
     qb.andWhere('productCategory.status != :deleteStatus', { deleteStatus: EStatus.DELETED });
-
-    // Apply filters
-    if (search) {
-      qb.andWhere('(productCategory.productId ILIKE :search OR productCategory.categoryId ILIKE :search)', {
-        search: `%${search}%`,
-      });
-    }
 
     // Apply filters
     if (productId) {

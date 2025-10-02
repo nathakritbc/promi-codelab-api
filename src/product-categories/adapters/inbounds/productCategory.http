@@ -18,8 +18,8 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "productId": "8ff53a77-7530-4eac-90c0-fc23b810bd26",
-  "categoryId": "a524c95d-5083-42d0-8e07-f2f0cba874c7",
+  "productId": "f870c54e-8047-4a32-be3c-adc26aef1b43",
+  "categoryId": "11f6ab2f-41b4-4302-9ff3-2f22fb892765",
   "status": "active"
 }
 
@@ -32,11 +32,11 @@ GET {{host}}/product-categories
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Product Categories with Filters
-GET {{host}}/product-categories?productId=product-uuid-123&status=active&page=1&limit=10
+GET {{host}}/product-categories?productId=f870c54e-8047-4a32-be3c-adc26aef1b43&status=active&page=1&limit=10
 authorization: Bearer {{myAccessToken}}
-
+ 
 ### Get All Product Categories by Category
-GET {{host}}/product-categories?categoryId=category-uuid-456&status=active
+GET {{host}}/product-categories?categoryId=11f6ab2f-41b4-4302-9ff3-2f22fb892765
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Product Categories Sorted by Created Date
@@ -47,20 +47,16 @@ authorization: Bearer {{myAccessToken}}
 GET {{host}}/product-categories/{{productCategoryId}}
 authorization: Bearer {{myAccessToken}}
 
-### Get Product Categories By Product Id
-GET {{host}}/product-categories/product/product-uuid-123
-authorization: Bearer {{myAccessToken}}
-
 ### Get Product Categories By Category Id
-GET {{host}}/product-categories/category/category-uuid-456
+GET {{host}}/product-categories/category/11f6ab2f-41b4-4302-9ff3-2f22fb892765
 authorization: Bearer {{myAccessToken}}
 
 ### Get Product Category By Association
-GET {{host}}/product-categories/association/product-uuid-123/category-uuid-456
+GET {{host}}/product-categories/association/f870c54e-8047-4a32-be3c-adc26aef1b43/11f6ab2f-41b4-4302-9ff3-2f22fb892765
 authorization: Bearer {{myAccessToken}}
 
 ### Update Product Category Status
-PUT {{host}}/product-categories/{{productCategoryId}}
+PUT {{host}}/product-categories/d496b4d2-79d9-4bd5-98b4-47464258c1a8
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
@@ -69,13 +65,13 @@ authorization: Bearer {{myAccessToken}}
 }
 
 ### Update Product Category Association
-PUT {{host}}/product-categories/{{productCategoryId}}
+PUT {{host}}/product-categories/d496b4d2-79d9-4bd5-98b4-47464258c1a8
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {
-  "productId": "product-uuid-789",
-  "categoryId": "category-uuid-101",
+  "productId": "f870c54e-8047-4a32-be3c-adc26aef1b43",
+  "categoryId": "11f6ab2f-41b4-4302-9ff3-2f22fb892765",
   "status": "active"
 }
 

@@ -19,6 +19,7 @@ import type {
   CategoryId,
   IProductCategory,
   ProductCategoryId,
+  ProductCategoryUpdatedAt,
   ProductId,
 } from 'src/product-categories/applications/domains/productCategory.domain';
 import { CreateProductCategoryUseCase } from 'src/product-categories/applications/usecases/createProductCategory.usecase';
@@ -31,7 +32,7 @@ import { GetProductCategoryByIdUseCase } from 'src/product-categories/applicatio
 import { UpdateProductCategoryByIdUseCase } from 'src/product-categories/applications/usecases/updateProductCategoryById.usecase';
 import { EStatus, type Status } from 'src/types/utility.type';
 import { CreateProductCategoryDto } from './dto/createProductCategory.dto';
-import type { UpdateProductCategoryDto } from './dto/updateProductCategory.dto';
+import { UpdateProductCategoryDto } from './dto/updateProductCategory.dto';
 
 @ApiTags('Product Categories')
 @UseGuards(JwtAuthGuard)
@@ -63,7 +64,6 @@ export class ProductCategoryController {
 
   @ApiOperation({ summary: 'Get all product categories' })
   @ApiResponse({ status: HttpStatus.OK, description: 'The product categories have been successfully retrieved.' })
-  @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'sort', required: false, type: String })
   @ApiQuery({ name: 'order', required: false, type: String, enum: ['ASC', 'DESC'] })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -74,7 +74,6 @@ export class ProductCategoryController {
   @Get()
   @Transactional()
   getAll(
-    @Query('search') search?: string,
     @Query('sort') sort?: string,
     @Query('order') order?: string,
     @Query('page') page?: number,
@@ -84,7 +83,6 @@ export class ProductCategoryController {
     @Query('status') status?: string,
   ) {
     return this.getAllProductCategoriesUseCase.execute({
-      search,
       sort,
       order,
       page,
@@ -144,13 +142,15 @@ export class ProductCategoryController {
     @Param('id', ParseUUIDPipe) id: ProductCategoryId,
     @Body() updateProductCategoryDto: UpdateProductCategoryDto,
   ): Promise<IProductCategory> {
-    const command = Builder<IProductCategory>()
+    const productCategory = Builder<IProductCategory>()
       .uuid(id)
       .productId(updateProductCategoryDto.productId as ProductId)
       .categoryId(updateProductCategoryDto.categoryId as CategoryId)
-      .status(updateProductCategoryDto.status as unknown as Status)
+      .status(updateProductCategoryDto.status as Status)
+      .updatedAt(new Date() as ProductCategoryUpdatedAt)
       .build();
-    return this.updateProductCategoryByIdUseCase.execute(command);
+
+    return this.updateProductCategoryByIdUseCase.execute(productCategory);
   }
 
   @ApiOperation({ summary: 'Delete a product category' })
