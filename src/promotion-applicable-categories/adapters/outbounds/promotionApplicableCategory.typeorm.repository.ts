@@ -2,7 +2,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 import { Injectable } from '@nestjs/common';
 import { Builder, StrictBuilder } from 'builder-pattern';
-import type { Status } from 'src/types/utility.type';
+import { EStatus, type Status } from 'src/types/utility.type';
 import { paginateQueryBuilder, PaginationParams } from '../../../utils/pagination.util';
 import type {
   CategoryId,
@@ -45,6 +45,18 @@ export class PromotionApplicableCategoryTypeOrmRepository implements PromotionAp
 
     const repo = this.promotionApplicableCategoryModel.tx.getRepository(PromotionApplicableCategoryEntity);
     const qb = repo.createQueryBuilder('promotionApplicableCategory');
+
+    qb.andWhere('promotionApplicableCategory.status != :deleteStatus', { deleteStatus: EStatus.DELETED });
+
+    // Apply filters
+    if (search) {
+      qb.andWhere(
+        '(promotionApplicableCategory.promotionId ILIKE :search OR promotionApplicableCategory.categoryId ILIKE :search)',
+        {
+          search: `%${search}%`,
+        },
+      );
+    }
 
     // Apply filters
     if (promotionId) {
