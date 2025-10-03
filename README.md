@@ -47,6 +47,74 @@ Swagger is available at `http://localhost:9009/api` once the app is running.
 >
 > Swagger จัดกลุ่ม endpoint ตามโมดูล และแสดงตัวอย่าง schema/response ให้เลือกปรับค่าก่อนส่งได้ ช่วยยืนยันพฤติกรรมของระบบได้รวดเร็วโดยไม่ต้องใช้ REST client ภายนอก
 
+## Testing with Deployed API
+
+The API is deployed and available for testing at: **https://promi-codelab-api.onrender.com/api**
+
+### Quick Test with Swagger UI
+
+1. **Open Swagger Documentation**: Visit [https://promi-codelab-api.onrender.com/api](https://promi-codelab-api.onrender.com/api)
+2. **Login**: Use the `POST /auth/login` endpoint with the seeded admin credentials:
+   ```json
+   {
+     "email": "john@example.com",
+     "password": "password123"
+   }
+   ```
+3. **Authorize**: Click the "Authorize" button in Swagger UI and paste the `accessToken` from the login response
+4. **Test Endpoints**: Try the following endpoints:
+   - `GET /catalog/products` - View all products with applied promotions
+   - `POST /categories` - Create new categories
+   - `POST /products` - Create new products
+   - `POST /promotions` - Create new promotions
+
+### Testing with cURL
+
+```bash
+# 1. Login to get access token
+curl -X POST https://promi-codelab-api.onrender.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }'
+
+# 2. Use the accessToken from response in subsequent requests
+curl -X GET https://promi-codelab-api.onrender.com/catalog/products \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN_HERE"
+```
+
+### Testing with REST Client
+
+Create a `.http` file with the following content:
+
+```http
+### Login
+POST https://promi-codelab-api.onrender.com/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### Get Catalog Products
+GET https://promi-codelab-api.onrender.com/catalog/products
+Authorization: Bearer {{accessToken}}
+
+### Create Category
+POST https://promi-codelab-api.onrender.com/categories
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Test Category",
+  "status": "active"
+}
+```
+
+> **Note**: The deployed API includes pre-seeded data for testing. You can immediately test the catalog functionality without creating new data.
+
 ## Sample data & manual test plan
 
 Use the REST client script `src/catalog/adapters/inbounds/catalog.http`. Each block is labelled; run them in order with the VS Code REST Client or IntelliJ HTTP Client.
