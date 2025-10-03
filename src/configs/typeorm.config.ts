@@ -9,7 +9,7 @@ import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConne
 
 const dialect = process.env.DB_DIALECT ?? 'postgres';
 const dbPort = process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432;
-const dbSsl = process.env.ENV?.trim() === 'production';
+const dbSsl = process.env.ENV === 'production';
 
 const typeOrmDatabaseConfig = StrictBuilder<PostgresConnectionOptions>()
   .type(dialect as 'postgres')
