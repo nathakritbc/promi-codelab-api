@@ -9,6 +9,8 @@ import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConne
 
 const dialect = process.env.DB_DIALECT ?? 'postgres';
 const dbPort = process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432;
+const dbSsl = process.env.ENV?.trim() === 'production';
+
 const typeOrmDatabaseConfig = StrictBuilder<PostgresConnectionOptions>()
   .type(dialect as 'postgres')
   .host(process.env.DB_HOST || 'localhost')
@@ -22,6 +24,7 @@ const typeOrmDatabaseConfig = StrictBuilder<PostgresConnectionOptions>()
   .migrations([__dirname + '/../databases/migrations/*{.ts,.js}'])
   .migrationsTableName('migrations_history')
   .migrationsRun(false)
+  .ssl(dbSsl)
   .build();
 
 const imports = [DatabaseModule];
