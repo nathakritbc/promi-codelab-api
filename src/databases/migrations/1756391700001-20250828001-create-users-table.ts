@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateUsersTable1756391900901 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -43,27 +43,20 @@ export class CreateUsersTable1756391900901 implements MigrationInterface {
       true,
     );
 
-    // Create indexes for better performance
-    await queryRunner.createIndex(
-      'users',
-      new TableIndex({
-        name: 'IDX_USERS_EMAIL',
-        columnNames: ['email'],
-      }),
-    );
-    await queryRunner.createIndex(
-      'users',
-      new TableIndex({
-        name: 'IDX_USERS_CREATED_AT',
-        columnNames: ['createdAt'],
-      }),
-    );
+    // Create indexes for better performance using raw SQL with IF NOT EXISTS
+    await queryRunner.query(`
+      CREATE INDEX IF NOT EXISTS "IDX_USERS_EMAIL" ON "users" ("email")
+    `);
+
+    await queryRunner.query(`
+      CREATE INDEX IF NOT EXISTS "IDX_USERS_CREATED_AT" ON "users" ("createdAt")
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Drop indexes first
-    await queryRunner.dropIndex('users', 'IDX_USERS_EMAIL');
-    await queryRunner.dropIndex('users', 'IDX_USERS_CREATED_AT');
+    // Drop indexes first using raw SQL with IF EXISTS
+    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_USERS_EMAIL"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_USERS_CREATED_AT"`);
 
     // Drop table
     await queryRunner.dropTable('users');
