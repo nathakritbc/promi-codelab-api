@@ -327,6 +327,49 @@ src/
 
 Every module exports its repository token so `CatalogModule` can compose them without breaking boundaries.
 
+## Deployment
+
+### Docker Deployment (Recommended)
+
+For production deployment, we recommend using Docker. See the comprehensive [Docker Deployment Guide](README-Docker.md) for detailed instructions.
+
+#### Quick Docker Deployment
+
+```bash
+# Development environment
+./scripts/docker-deploy.sh dev
+
+# Production environment  
+./scripts/docker-deploy.sh prod
+
+# Stop all services
+./scripts/docker-deploy.sh stop
+```
+
+The Docker setup includes:
+- **API Service**: NestJS application on port 9009
+- **PostgreSQL Database**: Database with automatic migrations
+- **Health Checks**: Built-in monitoring for all services
+
+### Local Development
+
+For local development without Docker:
+
+```bash
+# Install dependencies
+pnpm install
+
+# Set up environment
+cp env.example .env
+# Edit .env with your database configuration
+
+# Run migrations
+pnpm run migration:run
+
+# Start development server
+pnpm run start:dev
+```
+
 ## Common commands
 
 ```bash
