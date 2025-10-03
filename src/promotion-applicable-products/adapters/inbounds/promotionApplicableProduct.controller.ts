@@ -12,9 +12,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Builder, StrictBuilder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
+import { accessKeyToken } from 'src/configs/jwt.config';
 import type {
   IPromotionApplicableProduct,
   ProductId,
@@ -35,6 +36,7 @@ import { CreatePromotionApplicableProductDto } from './dto/createPromotionApplic
 import { UpdatePromotionApplicableProductDto } from './dto/updatePromotionApplicableProduct.dto';
 
 @ApiTags('Promotion Applicable Products')
+@ApiBearerAuth(accessKeyToken)
 @UseGuards(JwtAuthGuard)
 @Controller('promotion-applicable-products')
 export class PromotionApplicableProductController {

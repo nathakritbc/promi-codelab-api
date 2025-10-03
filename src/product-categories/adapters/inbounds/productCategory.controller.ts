@@ -12,9 +12,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
+import { accessKeyToken } from 'src/configs/jwt.config';
 import type {
   CategoryId,
   IProductCategory,
@@ -35,6 +36,7 @@ import { CreateProductCategoryDto } from './dto/createProductCategory.dto';
 import { UpdateProductCategoryDto } from './dto/updateProductCategory.dto';
 
 @ApiTags('Product Categories')
+@ApiBearerAuth(accessKeyToken)
 @UseGuards(JwtAuthGuard)
 @Controller('product-categories')
 export class ProductCategoryController {

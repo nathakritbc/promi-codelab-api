@@ -12,9 +12,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
+import { accessKeyToken } from 'src/configs/jwt.config';
 import type {
   DiscountType,
   IPromotion,
@@ -38,6 +39,7 @@ import { CreatePromotionDto } from './dto/createPromotion.dto';
 import { UpdatePromotionDto } from './dto/updatePromotion.dto';
 
 @ApiTags('Promotions')
+@ApiBearerAuth(accessKeyToken)
 @UseGuards(JwtAuthGuard)
 @Controller('promotions')
 export class PromotionController {

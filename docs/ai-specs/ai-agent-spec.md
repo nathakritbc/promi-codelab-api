@@ -559,6 +559,10 @@ describe('Delete{Entity}ByIdUseCase', () => {
 ### Controller Pattern
 ```typescript
 
+import { accessKeyToken } from 'src/configs/jwt.config';
+import { ApiOperation, ApiParam, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+
+@ApiBearerAuth(accessKeyToken)
 @UseGuards(JwtAuthGuard)
 @Controller('{entity}s')
 export class {Entity}Controller {

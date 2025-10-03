@@ -1,12 +1,14 @@
 import { Transactional } from '@nestjs-cls/transactional';
 import { Controller, Get, HttpStatus, Query, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
+import { accessKeyToken } from 'src/configs/jwt.config';
 import { EStatus } from 'src/types/utility.type';
-import { CatalogProductListResponseDto } from './dto/catalogProductResponse.dto';
 import { GetCatalogProductsUseCase } from '../../applications/usecases/getCatalogProducts.usecase';
+import { CatalogProductListResponseDto } from './dto/catalogProductResponse.dto';
 
 @ApiTags('Catalog')
+@ApiBearerAuth(accessKeyToken)
 @UseGuards(JwtAuthGuard)
 @Controller('catalog')
 export class CatalogController {

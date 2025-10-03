@@ -12,9 +12,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Builder, StrictBuilder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
+import { accessKeyToken } from 'src/configs/jwt.config';
 import type {
   CategoryId,
   IPromotionApplicableCategory,
@@ -36,6 +37,7 @@ import { CreatePromotionApplicableCategoryDto } from './dto/createPromotionAppli
 import { UpdatePromotionApplicableCategoryDto } from './dto/updatePromotionApplicableCategory.dto';
 
 @ApiTags('Promotion Applicable Categories')
+@ApiBearerAuth(accessKeyToken)
 @UseGuards(JwtAuthGuard)
 @Controller('promotion-applicable-categories')
 export class PromotionApplicableCategoryController {

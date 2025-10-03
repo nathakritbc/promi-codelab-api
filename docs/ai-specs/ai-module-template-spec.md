@@ -531,7 +531,8 @@ export class {Entity}ResponseDto {
 ```typescript
 import { Transactional } from '@nestjs-cls/transactional';
 import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { accessKeyToken } from 'src/configs/jwt.config';
 import { Builder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type { I{Entity}, {Entity}Id } from 'src/{Entity}s/applications/domains/{Entity}.domain';
@@ -543,6 +544,7 @@ import { Update{Entity}ByIdUseCase } from 'src/{Entity}s/applications/usecases/u
 import { Create{Entity}Dto } from './dto/create{Entity}.dto';
 import type { Update{Entity}Dto } from './dto/update{Entity}.dto';
 
+@ApiBearerAuth(accessKeyToken)
 @UseGuards(JwtAuthGuard)
 @Controller('{Entity}s')
 export class {Entity}Controller {

@@ -12,7 +12,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type {
@@ -29,11 +29,13 @@ import { GetAllCategoriesUseCase } from 'src/categories/applications/usecases/ge
 import { GetCategoriesByParentIdUseCase } from 'src/categories/applications/usecases/getCategoriesByParentId.usecase';
 import { GetCategoryByIdUseCase } from 'src/categories/applications/usecases/getCategoryById.usecase';
 import { UpdateCategoryByIdUseCase } from 'src/categories/applications/usecases/updateCategoryById.usecase';
+import { accessKeyToken } from 'src/configs/jwt.config';
 import { EStatus, type Status } from 'src/types/utility.type';
 import { CreateCategoryDto } from './dto/createCategory.dto';
 import { UpdateCategoryDto } from './dto/updateCategory.dto';
 
 @ApiTags('Categories')
+@ApiBearerAuth(accessKeyToken)
 @UseGuards(JwtAuthGuard)
 @Controller('categories')
 export class CategoryController {
