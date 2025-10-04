@@ -64,11 +64,11 @@ GET {{host}}/categories?sort=name&order=ASC
 authorization: Bearer {{myAccessToken}}
 
 ### Get Category By Id
-GET {{host}}/categories/df17669e-9f41-405b-bf8f-2d9555733799
+GET {{host}}/categories/4e7ac46b-93f2-4296-b441-0876a01b34a1
 authorization: Bearer {{myAccessToken}}
 
 ### Get Categories By Parent Id
-GET {{host}}/categories/parent/df17669e-9f41-405b-bf8f-2d9555733799
+GET {{host}}/categories/parent/ed93b1f8-3e16-4e40-b26e-bde009e0916c
 authorization: Bearer {{myAccessToken}}
 
 ### Update Category
