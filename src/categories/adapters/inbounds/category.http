@@ -44,7 +44,7 @@ GET {{host}}/categories?status=active&isRoot=true&page=1&limit=10
 authorization: Bearer {{myAccessToken}}
 
 ### Get All Categories with Filters
-GET {{host}}/categories?parentId=c2c57f74-454d-41a9-af30-af70b766d185
+GET {{host}}/categories?parentId=ed93b1f8-3e16-4e40-b26e-bde009e0916c
 authorization: Bearer {{myAccessToken}}
  
 ### Get All Categories with Filters

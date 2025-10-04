@@ -6,8 +6,14 @@ import { MigrationUtils } from '../migration.utils';
 type UUIDRow = { uuid: string };
 
 const PRODUCT_CODES = ['MON-001', 'KEY-001', 'MOU-001'];
-const PROMOTION_NAMES = ['Monitor Mega Sale', 'Accessory Happy Hour', 'Keyboard Flash Deal', 'Keyboard Clearance'];
-const CATEGORY_NAMES = ['Monitors', 'Computer Accessories'];
+const PROMOTION_NAMES = [
+  'Monitor Mega Sale',
+  'Accessory Happy Hour',
+  'Accessory Tree Bonus',
+  'Keyboard Flash Deal',
+  'Keyboard Clearance',
+];
+const CATEGORY_NAMES = ['Monitors', 'Computer Accessories', 'Keyboards'];
 
 function addDays(days: number): string {
   const now = new Date();
@@ -66,6 +72,13 @@ async function seedCatalogDemo() {
       ['Computer Accessories'],
     ))[0] as UUIDRow;
 
+    const keyboardSubCategory = (await queryRunner.query(
+      `INSERT INTO categories (uuid, name, parent_id, ancestors, tree_id, status)
+       VALUES (gen_random_uuid(), $1, $2, ARRAY[$2::uuid], $2, 'active')
+       RETURNING uuid`,
+      ['Keyboards', accessoriesCategory.uuid],
+    ))[0] as UUIDRow;
+
     console.log('🛒 Inserting products...');
     const monitorProduct = (await queryRunner.query(
       `INSERT INTO products (uuid, code, name, description, price, status)
@@ -102,6 +115,11 @@ async function seedCatalogDemo() {
     await queryRunner.query(
       `INSERT INTO product_categories (uuid, product_id, category_id, status)
        VALUES (gen_random_uuid(), $1, $2, 'active')`,
+      [keyboardProduct.uuid, keyboardSubCategory.uuid],
+    );
+    await queryRunner.query(
+      `INSERT INTO product_categories (uuid, product_id, category_id, status)
+       VALUES (gen_random_uuid(), $1, $2, 'active')`,
       [mouseProduct.uuid, accessoriesCategory.uuid],
     );
 
@@ -118,6 +136,13 @@ async function seedCatalogDemo() {
        VALUES (gen_random_uuid(), $1, 'active', $2::timestamptz, $3::timestamptz, 'Fixed', $4, NULL, $5)
        RETURNING uuid`,
       ['Accessory Happy Hour', addDays(-1), addDays(365), 200, 3],
+    ))[0] as UUIDRow;
+
+    const accessoryTreePromotion = (await queryRunner.query(
+      `INSERT INTO promotions (uuid, name, status, starts_at, ends_at, discount_type, discount_value, max_discount_amount, priority)
+       VALUES (gen_random_uuid(), $1, 'active', $2::timestamptz, $3::timestamptz, 'Percent', $4, NULL, $5)
+       RETURNING uuid`,
+      ['Accessory Tree Bonus', addDays(-1), addDays(365), 5, 2],
     ))[0] as UUIDRow;
 
     const keyboardFlashPromotion = (await queryRunner.query(
@@ -145,6 +170,11 @@ async function seedCatalogDemo() {
       `INSERT INTO promotion_applicable_categories (uuid, promotion_id, category_id, include_children, status)
        VALUES (gen_random_uuid(), $1, $2, false, 'active')`,
       [accessoryPromotion.uuid, accessoriesCategory.uuid],
+    );
+    await queryRunner.query(
+      `INSERT INTO promotion_applicable_categories (uuid, promotion_id, category_id, include_children, status)
+       VALUES (gen_random_uuid(), $1, $2, true, 'active')`,
+      [accessoryTreePromotion.uuid, accessoriesCategory.uuid],
     );
 
     await queryRunner.query(
