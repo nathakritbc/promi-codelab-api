@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/nathakritbc/promi-codelab-api/compare/v1.1.0...v1.2.0) (2025-10-04)
+
+### Features
+
+* 🎸 Add Database Seeding Script and Update Package Configuration ([25535ce](https://github.com/nathakritbc/promi-codelab-api/commit/25535cee9c5b432f0313d4073b3830221d288745))
+* 🎸 Add Keyboard Clearance Promotion and Product Association Endpoints ([ae1adbb](https://github.com/nathakritbc/promi-codelab-api/commit/ae1adbbad4d7b552e841c09dca86e44ef7882aab))
+* 🎸 Update Category Seeding and HTTP Documentation ([1e03d81](https://github.com/nathakritbc/promi-codelab-api/commit/1e03d8153a7d0f3bc79d51f2ac5523f36a6cd217))
+
+### Bug Fixes
+
+* 🐛 Update HTTP Endpoints for Categories and Authentication ([5613218](https://github.com/nathakritbc/promi-codelab-api/commit/56132187bf715c33f3bd75d636931938a55d5501))
+
+### Code Refactoring
+
+* 💡 Clean Up Imports and Simplify Product Snapshot Logic ([b64e5a0](https://github.com/nathakritbc/promi-codelab-api/commit/b64e5a04485d19b82020455e0dc660d0c1a2d7d6))
+* 💡 Remove unused methods and tests from ProductCategory and PromotionApplicableCategory domains ([174f2ea](https://github.com/nathakritbc/promi-codelab-api/commit/174f2ea61d0d5d8ffbd9d4b63c1fd3fc5f4c90fd))
+* 💡 Replace Object.assign with Builder Pattern for Product Associations ([0f27c24](https://github.com/nathakritbc/promi-codelab-api/commit/0f27c24b8fa93e67cd4ce81b42b6f6cef267b96d))
+* 💡 Update getCategory method signature and remove unused category domain tests ([6e7a659](https://github.com/nathakritbc/promi-codelab-api/commit/6e7a659a0c99dc8a2b7398d72d141e8536980841))
+
 ## [1.1.0](https://github.com/nathakritbc/promi-codelab-api/compare/v1.0.0...v1.1.0) (2025-10-03)
 
 ### Features
