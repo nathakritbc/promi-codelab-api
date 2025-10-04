@@ -1,19 +1,12 @@
+import type { CategoryId } from 'src/product-categories/applications/domains/productCategory.domain';
+import { type IProduct, Product, type ProductPrice } from 'src/products/applications/domains/product.domain';
+import { type IPromotionRule, PromotionRule } from 'src/promotion-rules/applications/domains/promotionRule.domain';
 import {
   type DiscountType,
   type IPromotion,
   Promotion,
   type PromotionId,
 } from 'src/promotions/applications/domains/promotion.domain';
-import {
-  type IPromotionRule,
-  PromotionRule,
-} from 'src/promotion-rules/applications/domains/promotionRule.domain';
-import {
-  Product,
-  type IProduct,
-  type ProductPrice,
-} from 'src/products/applications/domains/product.domain';
-import type { CategoryId } from 'src/product-categories/applications/domains/productCategory.domain';
 
 export enum EPromotionOfferSource {
   PRODUCT = 'product',
@@ -41,15 +34,10 @@ export interface PromotionOfferSnapshot {
   metadata?: PromotionOfferMetadata;
 }
 
+export interface ProductCatalogProductSnapshot extends Omit<IProduct, 'productCategories'> {}
+
 export interface CatalogProductSnapshot {
-  product: {
-    uuid: IProduct['uuid'];
-    code: IProduct['code'];
-    name: IProduct['name'];
-    description?: IProduct['description'];
-    price: number;
-    status: IProduct['status'];
-  };
+  product: ProductCatalogProductSnapshot;
   basePrice: number;
   finalPrice: number;
   discountAmount: number;
@@ -165,15 +153,18 @@ export class CatalogProduct {
   }
 
   toSnapshot(): CatalogProductSnapshot {
+    const price = this.getBasePrice() as ProductPrice;
+    const product = {
+      uuid: this.product.uuid,
+      code: this.product.code,
+      name: this.product.name,
+      description: this.product.description,
+      price,
+      status: this.product.status,
+    };
+
     return {
-      product: {
-        uuid: this.product.uuid,
-        code: this.product.code,
-        name: this.product.name,
-        description: this.product.description,
-        price: this.getBasePrice(),
-        status: this.product.status,
-      },
+      product: product,
       basePrice: this.getBasePrice(),
       finalPrice: this.getFinalPrice(),
       discountAmount: this.getDiscountAmount(),
@@ -220,9 +211,7 @@ export class CatalogProduct {
       name: offer.promotion.name,
       discountType: offer.promotion.discountType,
       discountValue: Number(offer.promotion.discountValue),
-      maxDiscountAmount: offer.promotion.maxDiscountAmount
-        ? Number(offer.promotion.maxDiscountAmount)
-        : undefined,
+      maxDiscountAmount: offer.promotion.maxDiscountAmount ? Number(offer.promotion.maxDiscountAmount) : undefined,
       priority: Number(offer.promotion.priority ?? 0),
       discountAmount: offer.discountAmount,
       finalPrice: offer.finalPrice,
