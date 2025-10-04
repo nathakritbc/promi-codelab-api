@@ -180,6 +180,24 @@ content-type: application/json
 
 @keyboardPromotionId = {{createKeyboardFlashPromotion.response.body.uuid}}
 
+# @name createKeyboardClearancePromotion
+POST {{host}}/promotions
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "name": "Keyboard Clearance",
+  "status": "active",
+  "startsAt": "2025-01-01T00:00:00Z",
+  "endsAt": "2025-03-31T23:59:59Z",
+  "discountType": "Fixed",
+  "discountValue": 400,
+  "priority": 4
+}
+###
+
+@keyboardClearancePromotionId = {{createKeyboardClearancePromotion.response.body.uuid}}
+
 ### Attach Promotions to Categories / Products
 POST {{host}}/promotion-applicable-categories
 authorization: Bearer {{myAccessToken}}
@@ -216,6 +234,69 @@ content-type: application/json
 }
 ###
 
+POST {{host}}/promotion-applicable-products
+authorization: Bearer {{myAccessToken}}
+content-type: application/json
+
+{
+  "promotionId": "{{keyboardClearancePromotionId}}",
+  "productId": "{{keyboardProductId}}",
+  "status": "active"
+}
+###
+
+### --- Verification Calls -------------------------------------------------
+
 ### Get All Catalog Products
 GET {{host}}/catalog/products
 authorization: Bearer {{myAccessToken}}
+
+### Focus keyboard-only (expect best discount = 400 from Keyboard Clearance)
+GET {{host}}/catalog/products?search=Keyboard
+authorization: Bearer {{myAccessToken}}
+
+# Example response (อ้างอิง):
+# {
+#   "result": [
+#     {
+#       "product": {
+#         "uuid": "...",
+#         "code": "KEY-001",
+#         "name": "Mechanical Keyboard",
+#         "price": 2500,
+#         "status": "active"
+#       },
+#       "basePrice": 2500,
+#       "finalPrice": 2100,
+#       "discountAmount": 400,
+#       "appliedPromotion": {
+#         "promotionId": "...",
+#         "name": "Keyboard Clearance",
+#         "discountType": "Fixed",
+#         "discountValue": 400,
+#         "priority": 4,
+#         "discountAmount": 400,
+#         "finalPrice": 2100,
+#         "source": "product"
+#       },
+#       "promotions": [
+#         { "name": "Keyboard Clearance", "discountAmount": 400, "source": "product" },
+#         { "name": "Keyboard Flash Deal", "discountAmount": 250, "source": "product" },
+#         { "name": "Accessory Happy Hour", "discountAmount": 200, "source": "category" }
+#       ]
+#     }
+#   ],
+#   "meta": { "total": 1, "page": 1, "limit": 10, "totalPages": 1 }
+# }
+
+### Pause strongest promotion to see fallback (optional)
+# PUT {{host}}/promotions/{{keyboardClearancePromotionId}}
+# authorization: Bearer {{myAccessToken}}
+# content-type: application/json
+#
+# {
+#   "status": "paused"
+# }
+#
+# GET {{host}}/catalog/products?search=Keyboard
+# authorization: Bearer {{myAccessToken}}
