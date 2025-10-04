@@ -15,7 +15,7 @@ content-type: application/json
 
 ### Create Monitor Category
 # @name createMonitorCategory
-POST {{host}}/categories
+POST {{host}}/categories/root
 authorization: Bearer {{myAccessToken}}
 content-type: application/json
 
@@ -29,7 +29,7 @@ content-type: application/json
 
 ### Create Computer Accessories Category
 # @name createAccessoriesCategory
-POST {{host}}/categories
+POST {{host}}/categories/root 
 authorization: Bearer {{myAccessToken}}
 content-type: application/json
 
