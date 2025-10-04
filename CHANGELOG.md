@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.1](https://github.com/nathakritbc/promi-codelab-api/compare/v1.2.0...v1.2.1) (2025-10-04)
+
+### Code Refactoring
+
+* 💡 Enhance Catalog Product Use Case with Caching and Improved Structure ([be98600](https://github.com/nathakritbc/promi-codelab-api/commit/be98600d2f389236ffe0428c1088d66071442bea))
+
 ## [1.2.0](https://github.com/nathakritbc/promi-codelab-api/compare/v1.1.0...v1.2.0) (2025-10-04)
 
 ### Features
