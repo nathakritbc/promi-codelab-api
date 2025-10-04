@@ -41,7 +41,7 @@ GET {{host}}/products?sort=price&order=ASC
 authorization: Bearer {{myAccessToken}}
 
 ### Get Product By Id
-GET {{host}}/products/64777021-4b5e-4547-8d10-5ece0dbe06a7
+GET {{host}}/products/01b0d4fa-e8cd-4e8f-bb61-6296086807d0
 authorization: Bearer {{myAccessToken}}
 
 ### Update Product
