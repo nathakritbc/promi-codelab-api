@@ -43,38 +43,4 @@ export class Category implements ICategory {
     this.updatedAt = createdAtDateTime as CategoryUpdatedAt;
     this.treeId = categoryId as CategoryTreeId;
   }
-
-  isActive(): boolean {
-    return this.status === (EStatus.ACTIVE as Status);
-  }
-
-  isRoot(): boolean {
-    return !this.parentId;
-  }
-
-  hasChildren(): boolean {
-    return this.ancestors.length > 0;
-  }
-
-  getDepth(): number {
-    if (this.isRoot()) return 0;
-    // Depth calculation would need parent traversal in real implementation
-    return 1; // Simplified for now
-  }
-
-  canBeDeleted(): boolean {
-    return this.status !== (EStatus.DELETED as Status) && !this.hasChildren();
-  }
-
-  canBeMoved(): boolean {
-    return this.isActive() && !this.isRoot();
-  }
-
-  isLeaf(): boolean {
-    return !this.hasChildren();
-  }
-
-  getNodeSize(): number {
-    return this.ancestors.length;
-  }
 }
