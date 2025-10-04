@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { StrictBuilder } from 'builder-pattern';
+import { Builder, StrictBuilder } from 'builder-pattern';
 import type { CategoryId, ICategory } from 'src/categories/applications/domains/category.domain';
 import { Category } from 'src/categories/applications/domains/category.domain';
 import type { CategoryRepository } from 'src/categories/applications/ports/category.repository';
@@ -299,14 +299,36 @@ export class GetCatalogProductsUseCase {
   }
 
   public toPromotionApplicableProduct(association: IPromotionApplicableProduct): PromotionApplicableProduct {
-    return Object.assign(new PromotionApplicableProduct(), association);
+    return Builder(PromotionApplicableProduct)
+      .uuid(association.uuid)
+      .promotionId(association.promotionId)
+      .productId(association.productId)
+      .status(association.status)
+      .createdAt(association.createdAt)
+      .updatedAt(association.updatedAt)
+      .build();
   }
 
   public toPromotionApplicableCategory(association: IPromotionApplicableCategory): PromotionApplicableCategory {
-    return Object.assign(new PromotionApplicableCategory(), association);
+    return Builder(PromotionApplicableCategory)
+      .uuid(association.uuid)
+      .promotionId(association.promotionId)
+      .categoryId(association.categoryId)
+      .includeChildren(association.includeChildren)
+      .status(association.status)
+      .createdAt(association.createdAt)
+      .updatedAt(association.updatedAt)
+      .build();
   }
 
   public toProductCategory(productCategory: IProductCategory): ProductCategory {
-    return Object.assign(new ProductCategory(), productCategory);
+    return Builder(ProductCategory)
+      .uuid(productCategory.uuid)
+      .productId(productCategory.productId)
+      .categoryId(productCategory.categoryId)
+      .status(productCategory.status)
+      .createdAt(productCategory.createdAt)
+      .updatedAt(productCategory.updatedAt)
+      .build();
   }
 }
