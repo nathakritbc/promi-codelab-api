@@ -28,40 +28,4 @@ export class PromotionApplicableProduct implements IPromotionApplicableProduct {
   isActive(): boolean {
     return this.status === (EStatus.ACTIVE as Status);
   }
-
-  isInactive(): boolean {
-    return this.status === (EStatus.INACTIVE as Status);
-  }
-
-  canBeDeleted(): boolean {
-    return this.status !== (EStatus.DELETED as Status);
-  }
-
-  canBeActivated(): boolean {
-    return this.status === (EStatus.INACTIVE as Status);
-  }
-
-  canBeDeactivated(): boolean {
-    return this.status === (EStatus.ACTIVE as Status);
-  }
-
-  isSamePromotion(promotionId: PromotionId): boolean {
-    return this.promotionId === promotionId;
-  }
-
-  isSameProduct(productId: ProductId): boolean {
-    return this.productId === productId;
-  }
-
-  isSameAssociation(promotionId: PromotionId, productId: ProductId): boolean {
-    return this.promotionId === promotionId && this.productId === productId;
-  }
-
-  isApplicableToProduct(productId: ProductId): boolean {
-    return this.isActive() && this.isSameProduct(productId);
-  }
-
-  isApplicableToPromotion(promotionId: PromotionId): boolean {
-    return this.isActive() && this.isSamePromotion(promotionId);
-  }
 }

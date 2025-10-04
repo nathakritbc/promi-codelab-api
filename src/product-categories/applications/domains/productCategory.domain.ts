@@ -28,32 +28,4 @@ export class ProductCategory implements IProductCategory {
   isActive(): boolean {
     return this.status === (EStatus.ACTIVE as Status);
   }
-
-  isInactive(): boolean {
-    return this.status === (EStatus.INACTIVE as Status);
-  }
-
-  canBeDeleted(): boolean {
-    return this.status !== (EStatus.DELETED as Status);
-  }
-
-  canBeActivated(): boolean {
-    return this.status === (EStatus.INACTIVE as Status);
-  }
-
-  canBeDeactivated(): boolean {
-    return this.status === (EStatus.ACTIVE as Status);
-  }
-
-  isSameProduct(productId: ProductId): boolean {
-    return this.productId === productId;
-  }
-
-  isSameCategory(categoryId: CategoryId): boolean {
-    return this.categoryId === categoryId;
-  }
-
-  isSameAssociation(productId: ProductId, categoryId: CategoryId): boolean {
-    return this.productId === productId && this.categoryId === categoryId;
-  }
 }
