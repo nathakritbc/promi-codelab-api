@@ -239,8 +239,8 @@ authorization: Bearer {{myAccessToken}}
 content-type: application/json
 
 {
-  "promotionId": "{{keyboardClearancePromotionId}}",
-  "productId": "{{keyboardProductId}}",
+  "promotionId": "8b7717fe-4839-4bde-8934-1a1a5c8785c3",
+  "productId": "3cf4c4fb-450e-496b-b622-9443f329401d",
   "status": "active"
 }
 ###
