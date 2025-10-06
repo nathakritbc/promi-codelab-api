@@ -1,3 +1,4 @@
+'';
 import { Builder } from 'builder-pattern';
 import type { PromotionId } from 'src/promotions/applications/domains/promotion.domain';
 import { describe, expect, it } from 'vitest';
@@ -32,7 +33,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.hasMinimumQuantityRequirement();
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return false when minQty is not set', () => {
@@ -43,7 +44,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.hasMinimumQuantityRequirement();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return false when minQty is 0', () => {
@@ -54,7 +55,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.hasMinimumQuantityRequirement();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
   });
 
@@ -67,7 +68,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.hasMinimumAmountRequirement();
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return false when minAmount is not set', () => {
@@ -78,7 +79,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.hasMinimumAmountRequirement();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return false when minAmount is 0', () => {
@@ -89,7 +90,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.hasMinimumAmountRequirement();
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
   });
 
@@ -102,7 +103,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.meetsQuantityRequirement(10);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return true when quantity equals minimum requirement', () => {
@@ -113,7 +114,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.meetsQuantityRequirement(5);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return false when quantity is below minimum requirement', () => {
@@ -124,7 +125,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.meetsQuantityRequirement(3);
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return true when no minimum quantity requirement is set', () => {
@@ -135,7 +136,19 @@ describe('PromotionRuleDomain', () => {
       const result = rule.meetsQuantityRequirement(1);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
+    });
+
+    it('should return true when minQty is 0', () => {
+      // Arrange
+      const rule = createTestPromotionRule({ minQty: 0 as PromotionRuleMinQty });
+      vi.spyOn(rule, 'hasMinimumQuantityRequirement').mockReturnValue(true);
+
+      // Act
+      const result = rule.meetsQuantityRequirement(0);
+
+      // Assert
+      expect(result).toBeTruthy();
     });
   });
 
@@ -148,7 +161,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.meetsAmountRequirement(1500);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return true when amount equals minimum requirement', () => {
@@ -159,7 +172,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.meetsAmountRequirement(1000);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return false when amount is below minimum requirement', () => {
@@ -170,7 +183,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.meetsAmountRequirement(500);
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return true when no minimum amount requirement is set', () => {
@@ -181,7 +194,19 @@ describe('PromotionRuleDomain', () => {
       const result = rule.meetsAmountRequirement(100);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
+    });
+
+    it('should return true when minAmount is 0', () => {
+      // Arrange
+      const rule = createTestPromotionRule({ minAmount: 0 as PromotionRuleMinAmount });
+      vi.spyOn(rule, 'hasMinimumAmountRequirement').mockReturnValue(true);
+
+      // Act
+      const result = rule.meetsAmountRequirement(0);
+
+      // Assert
+      expect(result).toBeTruthy();
     });
   });
 
@@ -197,7 +222,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.isApplicable(10, 1500);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return false when quantity requirement is not met', () => {
@@ -211,7 +236,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.isApplicable(3, 1500);
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return false when amount requirement is not met', () => {
@@ -225,7 +250,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.isApplicable(10, 500);
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return false when both requirements are not met', () => {
@@ -239,7 +264,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.isApplicable(3, 500);
 
       // Assert
-      expect(result).toBe(false);
+      expect(result).toBeFalsy();
     });
 
     it('should return true when no requirements are set', () => {
@@ -253,7 +278,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.isApplicable(1, 1);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return true when only quantity requirement is set and met', () => {
@@ -267,7 +292,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.isApplicable(10, 100);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
 
     it('should return true when only amount requirement is set and met', () => {
@@ -281,7 +306,7 @@ describe('PromotionRuleDomain', () => {
       const result = rule.isApplicable(1, 1500);
 
       // Assert
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
     });
   });
 });
