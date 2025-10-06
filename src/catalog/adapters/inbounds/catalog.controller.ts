@@ -24,7 +24,7 @@ export class CatalogController {
   @ApiQuery({ name: 'sort', required: false, type: String })
   @ApiQuery({ name: 'order', required: false, type: String, enum: ['ASC', 'DESC'] })
   @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
+  // @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'status', required: false, enum: EStatus })
   @ApiQuery({ name: 'minPrice', required: false, type: Number })
   @ApiQuery({ name: 'maxPrice', required: false, type: Number })
@@ -35,7 +35,7 @@ export class CatalogController {
     @Query('sort') sort?: string,
     @Query('order') order?: string,
     @Query('page') page?: number,
-    @Query('limit') limit?: number,
+    // @Query('limit') limit?: number,
     @Query('status') status?: string,
     @Query('minPrice') minPrice?: number,
     @Query('maxPrice') maxPrice?: number,
@@ -45,7 +45,7 @@ export class CatalogController {
       sort,
       order,
       page,
-      limit,
+      limit: -1,
       status,
       minPrice,
       maxPrice,
