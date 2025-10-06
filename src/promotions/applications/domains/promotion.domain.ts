@@ -85,8 +85,4 @@ export class Promotion implements IPromotion {
 
     return discount;
   }
-
-  canBeModified(): boolean {
-    return this.status !== EPromotionStatus.ENDED;
-  }
 }

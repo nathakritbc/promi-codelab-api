@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { Builder } from 'builder-pattern';
 import { vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
@@ -93,34 +93,6 @@ describe('UpdatePromotionByIdUseCase', () => {
     expect(promotionRepository.updatePromotionById).not.toHaveBeenCalled();
   });
 
-  it('should throw BadRequestException when trying to update ended promotion', async () => {
-    // Arrange
-    const endedPromotion = Builder<IPromotion>()
-      .uuid(promotionId)
-      .name('Ended Promotion' as PromotionName)
-      .status(EPromotionStatus.ENDED as unknown as PromotionStatus)
-      .startsAt(faker.date.past() as PromotionStartsAt)
-      .endsAt(faker.date.past() as PromotionEndsAt)
-      .discountType(EDiscountType.PERCENT as unknown as DiscountType)
-      .discountValue(10 as PromotionDiscountValue)
-      .maxDiscountAmount(100 as PromotionMaxDiscountAmount)
-      .priority(1 as PromotionPriority)
-      .createdAt(new Date() as PromotionCreatedAt)
-      .updatedAt(new Date() as PromotionUpdatedAt)
-      .build();
-
-    promotionRepository.getPromotionById.mockResolvedValue(endedPromotion);
-
-    // Act
-    const promise = useCase.execute(updatedPromotion);
-
-    // Assert
-    await expect(promise).rejects.toThrow(BadRequestException);
-    await expect(promise).rejects.toThrow('Cannot modify ended promotion');
-    expect(promotionRepository.getPromotionById).toHaveBeenCalledWith({ id: promotionId });
-    expect(promotionRepository.updatePromotionById).not.toHaveBeenCalled();
-  });
-
   it('should update draft promotion successfully', async () => {
     // Arrange
     const draftPromotion = Builder<IPromotion>()
@@ -193,4 +165,3 @@ describe('UpdatePromotionByIdUseCase', () => {
     expect(promotionRepository.updatePromotionById).toHaveBeenCalledWith(updatedPromotion);
   });
 });
-
