@@ -1,3 +1,4 @@
+import { isEmpty } from 'radash';
 import type { PromotionId } from 'src/promotions/applications/domains/promotion.domain';
 import type { Brand, CreatedAt, UpdatedAt } from 'src/types/utility.type';
 
@@ -37,25 +38,27 @@ export class PromotionRule implements IPromotionRule {
 
   // Business logic methods
   hasMinimumQuantityRequirement(): boolean {
-    return this.minQty !== undefined && this.minQty !== null && this.minQty > 0;
+    if (isEmpty(this.minQty)) return false;
+    const minQty = Number(this.minQty);
+    return minQty > 0;
   }
 
   hasMinimumAmountRequirement(): boolean {
-    return this.minAmount !== undefined && this.minAmount !== null && this.minAmount > 0;
+    if (isEmpty(this.minAmount)) return false;
+    const minAmount = Number(this.minAmount);
+    return minAmount > 0;
   }
 
   meetsQuantityRequirement(quantity: number): boolean {
-    if (!this.hasMinimumQuantityRequirement()) {
-      return true; // No requirement means always met
-    }
-    return quantity >= (this.minQty || 0);
+    if (!this.hasMinimumQuantityRequirement()) return true;
+    const minQty = this.minQty ? Number(this.minQty) : 0;
+    return quantity >= minQty;
   }
 
   meetsAmountRequirement(amount: number): boolean {
-    if (!this.hasMinimumAmountRequirement()) {
-      return true; // No requirement means always met
-    }
-    return amount >= (this.minAmount || 0);
+    if (!this.hasMinimumAmountRequirement()) return true; // No requirement means always met
+    const minAmount = this.minAmount ? Number(this.minAmount) : 0;
+    return amount >= minAmount;
   }
 
   isApplicable(quantity: number, amount: number): boolean {
