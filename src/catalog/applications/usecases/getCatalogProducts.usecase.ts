@@ -327,9 +327,7 @@ export class GetCatalogProductsUseCase {
       promotionRulesCache,
     } = params;
 
-    if (!categoryIds.size) {
-      return;
-    }
+    if (!categoryIds.size) return;
 
     for (const categoryId of categoryIds) {
       await this.processCategoryPromotions({
@@ -365,17 +363,13 @@ export class GetCatalogProductsUseCase {
       categoryId,
       cache: categoryApplicablesCache,
     });
-    if (!associations.length) {
-      return;
-    }
+    if (!associations.length) return;
 
     const activeAssociations = this.filterActiveCategoryAssociations({
       associations,
       requireIncludeChildren,
     });
-    if (!activeAssociations.length) {
-      return;
-    }
+    if (!activeAssociations.length) return;
 
     await this.applyCategoryPromotions({
       catalogProduct,
@@ -398,13 +392,9 @@ export class GetCatalogProductsUseCase {
     return associations
       .map((association) => this.toPromotionApplicableCategory(association))
       .filter((association) => {
-        if (!association.isActive()) {
-          return false;
-        }
+        if (!association.isActive()) return false;
 
-        if (requireIncludeChildren) {
-          return association.shouldIncludeChildren();
-        }
+        if (requireIncludeChildren) return association.shouldIncludeChildren();
 
         return true;
       });
@@ -488,9 +478,7 @@ export class GetCatalogProductsUseCase {
     }
 
     const promotion = await this.promotionRepository.getPromotionById({ id: promotionId });
-    if (promotion) {
-      cache.set(key, promotion);
-    }
+    if (promotion) cache.set(key, promotion);
 
     return promotion ?? undefined;
   }
