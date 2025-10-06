@@ -589,7 +589,7 @@ describe('GetCatalogProductsUseCase', () => {
       cache.set(categoryId, mockCategory);
 
       // Act
-      const result = await useCase.getCategory(categoryId, cache);
+      const result = await useCase.getCategory({ categoryId, cache });
 
       // Assert
       expect(result).toEqual(mockCategory);
@@ -603,7 +603,7 @@ describe('GetCatalogProductsUseCase', () => {
       cache.set(categoryId, null);
 
       // Act
-      const result = await useCase.getCategory(categoryId, cache);
+      const result = await useCase.getCategory({ categoryId, cache });
 
       // Assert
       expect(result).toBeNull();
@@ -625,7 +625,7 @@ describe('GetCatalogProductsUseCase', () => {
       categoryRepository.getCategoryById.mockResolvedValue(mockCategory);
 
       // Act
-      const result = await useCase.getCategory(categoryId, cache);
+      const result = await useCase.getCategory({ categoryId, cache });
 
       // Assert
       expect(result).toEqual(mockCategory);
@@ -640,7 +640,7 @@ describe('GetCatalogProductsUseCase', () => {
       categoryRepository.getCategoryById.mockResolvedValue(undefined);
 
       // Act
-      const result = await useCase.getCategory(categoryId, cache);
+      const result = await useCase.getCategory({ categoryId, cache });
 
       // Assert
       expect(result).toBeNull();
@@ -658,7 +658,7 @@ describe('GetCatalogProductsUseCase', () => {
       categoryRepository.getCategoryById.mockRejectedValue(expectedError);
 
       // Act
-      const promise = useCase.getCategory(categoryId, cache);
+      const promise = useCase.getCategory({ categoryId, cache });
 
       // Assert
       await expect(promise).rejects.toThrow(expectedError);
@@ -676,7 +676,7 @@ describe('GetCatalogProductsUseCase', () => {
       cache.set(String(promotionId), mockPromotion);
 
       // Act
-      const result = await useCase.getPromotion(promotionId, cache);
+      const result = await useCase.getPromotion({ promotionId, cache });
 
       // Assert
       expect(result).toEqual(mockPromotion);
@@ -692,7 +692,7 @@ describe('GetCatalogProductsUseCase', () => {
       promotionRepository.getPromotionById.mockResolvedValue(mockPromotion);
 
       // Act
-      const result = await useCase.getPromotion(promotionId, cache);
+      const result = await useCase.getPromotion({ promotionId, cache });
 
       // Assert
       expect(result).toEqual(mockPromotion);
@@ -707,7 +707,7 @@ describe('GetCatalogProductsUseCase', () => {
       promotionRepository.getPromotionById.mockResolvedValue(undefined);
 
       // Act
-      const result = await useCase.getPromotion(promotionId, cache);
+      const result = await useCase.getPromotion({ promotionId, cache });
 
       // Assert
       expect(result).toBeUndefined();
@@ -725,7 +725,7 @@ describe('GetCatalogProductsUseCase', () => {
       promotionRepository.getPromotionById.mockRejectedValue(expectedError);
 
       // Act
-      const promise = useCase.getPromotion(promotionId, cache);
+      const promise = useCase.getPromotion({ promotionId, cache });
 
       // Assert
       await expect(promise).rejects.toThrow(expectedError);
@@ -749,7 +749,7 @@ describe('GetCatalogProductsUseCase', () => {
       cache.set(String(promotionId), mockRules);
 
       // Act
-      const result = await useCase.getPromotionRules(promotionId, cache);
+      const result = await useCase.getPromotionRules({ promotionId, cache });
 
       // Assert
       expect(result).toEqual(mockRules);
@@ -771,7 +771,7 @@ describe('GetCatalogProductsUseCase', () => {
       promotionRuleRepository.getPromotionRulesByPromotionId.mockResolvedValue(mockRules);
 
       // Act
-      const result = await useCase.getPromotionRules(promotionId, cache);
+      const result = await useCase.getPromotionRules({ promotionId, cache });
 
       // Assert
       expect(result).toEqual(mockRules);
@@ -788,7 +788,7 @@ describe('GetCatalogProductsUseCase', () => {
       promotionRuleRepository.getPromotionRulesByPromotionId.mockResolvedValue([]);
 
       // Act
-      const result = await useCase.getPromotionRules(promotionId, cache);
+      const result = await useCase.getPromotionRules({ promotionId, cache });
 
       // Assert
       expect(result).toEqual([]);
@@ -808,7 +808,7 @@ describe('GetCatalogProductsUseCase', () => {
       promotionRuleRepository.getPromotionRulesByPromotionId.mockRejectedValue(expectedError);
 
       // Act
-      const promise = useCase.getPromotionRules(promotionId, cache);
+      const promise = useCase.getPromotionRules({ promotionId, cache });
 
       // Assert
       await expect(promise).rejects.toThrow(expectedError);
@@ -836,7 +836,7 @@ describe('GetCatalogProductsUseCase', () => {
       cache.set(categoryId, mockAssociations);
 
       // Act
-      const result = await useCase.getPromotionApplicableCategories(categoryId, cache);
+      const result = await useCase.getPromotionApplicableCategories({ categoryId, cache });
 
       // Assert
       expect(result).toEqual(mockAssociations);
@@ -862,7 +862,7 @@ describe('GetCatalogProductsUseCase', () => {
       );
 
       // Act
-      const result = await useCase.getPromotionApplicableCategories(categoryId, cache);
+      const result = await useCase.getPromotionApplicableCategories({ categoryId, cache });
 
       // Assert
       expect(result).toEqual(mockAssociations);
@@ -879,7 +879,7 @@ describe('GetCatalogProductsUseCase', () => {
       promotionApplicableCategoryRepository.getPromotionApplicableCategoriesByCategoryId.mockResolvedValue([]);
 
       // Act
-      const result = await useCase.getPromotionApplicableCategories(categoryId, cache);
+      const result = await useCase.getPromotionApplicableCategories({ categoryId, cache });
 
       // Assert
       expect(result).toEqual([]);
@@ -901,7 +901,7 @@ describe('GetCatalogProductsUseCase', () => {
       );
 
       // Act
-      const promise = useCase.getPromotionApplicableCategories(categoryId, cache);
+      const promise = useCase.getPromotionApplicableCategories({ categoryId, cache });
 
       // Assert
       await expect(promise).rejects.toThrow(expectedError);

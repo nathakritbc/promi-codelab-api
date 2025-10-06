@@ -114,7 +114,7 @@ export class GetCatalogProductsUseCase {
     const catalogResults: CatalogProductSnapshot[] = [];
 
     for (const product of products) {
-      const catalogProduct = await this.processSingleProduct(product, caches);
+      const catalogProduct = await this.processSingleProduct({ product, caches });
       catalogResults.push(catalogProduct);
     }
 
@@ -124,7 +124,13 @@ export class GetCatalogProductsUseCase {
   /**
    * Process a single product: create catalog product and apply all promotions
    */
-  private async processSingleProduct(product: IProduct, caches: CacheCollections): Promise<CatalogProductSnapshot> {
+  private async processSingleProduct({
+    product,
+    caches,
+  }: {
+    product: IProduct;
+    caches: CacheCollections;
+  }): Promise<CatalogProductSnapshot> {
     const catalogProduct = CatalogProduct.from(product);
 
     // Apply product-specific promotions
@@ -182,7 +188,12 @@ export class GetCatalogProductsUseCase {
 
     const activeAssociations = this.filterActiveProductAssociations(associations);
 
-    await this.applyProductPromotions(catalogProduct, activeAssociations, promotionCache, promotionRulesCache);
+    await this.applyProductPromotions({
+      catalogProduct,
+      activeAssociations,
+      promotionCache,
+      promotionRulesCache,
+    });
   }
 
   /**
@@ -197,17 +208,28 @@ export class GetCatalogProductsUseCase {
   /**
    * Apply promotions to a catalog product
    */
-  private async applyProductPromotions(
-    catalogProduct: CatalogProduct,
-    activeAssociations: PromotionApplicableProduct[],
-    promotionCache: Map<string, IPromotion>,
-    promotionRulesCache: Map<string, IPromotionRule[]>,
-  ): Promise<void> {
+  private async applyProductPromotions({
+    catalogProduct,
+    activeAssociations,
+    promotionCache,
+    promotionRulesCache,
+  }: {
+    catalogProduct: CatalogProduct;
+    activeAssociations: PromotionApplicableProduct[];
+    promotionCache: Map<string, IPromotion>;
+    promotionRulesCache: Map<string, IPromotionRule[]>;
+  }): Promise<void> {
     for (const association of activeAssociations) {
-      const promotion = await this.getPromotion(association.promotionId, promotionCache);
+      const promotion = await this.getPromotion({
+        promotionId: association.promotionId,
+        cache: promotionCache,
+      });
       if (!promotion) continue;
 
-      const rules = await this.getPromotionRules(association.promotionId, promotionRulesCache);
+      const rules = await this.getPromotionRules({
+        promotionId: association.promotionId,
+        cache: promotionRulesCache,
+      });
 
       catalogProduct.evaluatePromotion({
         promotion,
@@ -236,7 +258,10 @@ export class GetCatalogProductsUseCase {
 
     const activeProductCategories = this.filterActiveProductCategories(productCategories);
 
-    return this.buildCategoryHierarchy(activeProductCategories, categoryCache);
+    return this.buildCategoryHierarchy({
+      activeProductCategories,
+      categoryCache,
+    });
   }
 
   /**
@@ -251,10 +276,13 @@ export class GetCatalogProductsUseCase {
   /**
    * Build category hierarchy from active product categories
    */
-  private async buildCategoryHierarchy(
-    activeProductCategories: ProductCategory[],
-    categoryCache: Map<string, ICategory | null>,
-  ): Promise<ProductCategoryHierarchy> {
+  private async buildCategoryHierarchy({
+    activeProductCategories,
+    categoryCache,
+  }: {
+    activeProductCategories: ProductCategory[];
+    categoryCache: Map<string, ICategory | null>;
+  }): Promise<ProductCategoryHierarchy> {
     const exactCategoryIds = new Set<string>();
     const ancestorCategoryIds = new Set<string>();
 
@@ -262,7 +290,11 @@ export class GetCatalogProductsUseCase {
       const categoryId = String(productCategory.categoryId);
       exactCategoryIds.add(categoryId);
 
-      await this.collectAncestorCategories(categoryId, ancestorCategoryIds, categoryCache);
+      await this.collectAncestorCategories({
+        categoryId,
+        ancestorCategoryIds,
+        categoryCache,
+      });
     }
 
     return { exactCategoryIds, ancestorCategoryIds };
@@ -271,12 +303,19 @@ export class GetCatalogProductsUseCase {
   /**
    * Collect ancestor categories for a given category
    */
-  private async collectAncestorCategories(
-    categoryId: string,
-    ancestorCategoryIds: Set<string>,
-    categoryCache: Map<string, ICategory | null>,
-  ): Promise<void> {
-    const category = await this.getCategory(categoryId, categoryCache);
+  private async collectAncestorCategories({
+    categoryId,
+    ancestorCategoryIds,
+    categoryCache,
+  }: {
+    categoryId: string;
+    ancestorCategoryIds: Set<string>;
+    categoryCache: Map<string, ICategory | null>;
+  }): Promise<void> {
+    const category = await this.getCategory({
+      categoryId,
+      cache: categoryCache,
+    });
     if (category && Array.isArray(category.ancestors)) {
       category.ancestors.forEach((ancestorId) => ancestorCategoryIds.add(ancestorId));
     }
@@ -300,48 +339,69 @@ export class GetCatalogProductsUseCase {
     }
 
     for (const categoryId of categoryIds) {
-      await this.processCategoryPromotions(
+      await this.processCategoryPromotions({
         categoryId,
         requireIncludeChildren,
         catalogProduct,
         categoryApplicablesCache,
         promotionCache,
         promotionRulesCache,
-      );
+      });
     }
   }
 
   /**
    * Process promotions for a specific category
    */
-  private async processCategoryPromotions(
-    categoryId: string,
-    requireIncludeChildren: boolean,
-    catalogProduct: CatalogProduct,
-    categoryApplicablesCache: Map<string, IPromotionApplicableCategory[]>,
-    promotionCache: Map<string, IPromotion>,
-    promotionRulesCache: Map<string, IPromotionRule[]>,
-  ): Promise<void> {
-    const associations = await this.getPromotionApplicableCategories(categoryId, categoryApplicablesCache);
+  private async processCategoryPromotions({
+    categoryId,
+    requireIncludeChildren,
+    catalogProduct,
+    categoryApplicablesCache,
+    promotionCache,
+    promotionRulesCache,
+  }: {
+    categoryId: string;
+    requireIncludeChildren: boolean;
+    catalogProduct: CatalogProduct;
+    categoryApplicablesCache: Map<string, IPromotionApplicableCategory[]>;
+    promotionCache: Map<string, IPromotion>;
+    promotionRulesCache: Map<string, IPromotionRule[]>;
+  }): Promise<void> {
+    const associations = await this.getPromotionApplicableCategories({
+      categoryId,
+      cache: categoryApplicablesCache,
+    });
     if (!associations.length) {
       return;
     }
 
-    const activeAssociations = this.filterActiveCategoryAssociations(associations, requireIncludeChildren);
+    const activeAssociations = this.filterActiveCategoryAssociations({
+      associations,
+      requireIncludeChildren,
+    });
     if (!activeAssociations.length) {
       return;
     }
 
-    await this.applyCategoryPromotions(catalogProduct, activeAssociations, promotionCache, promotionRulesCache);
+    await this.applyCategoryPromotions({
+      catalogProduct,
+      activeAssociations,
+      promotionCache,
+      promotionRulesCache,
+    });
   }
 
   /**
    * Filter and convert category associations to active domain objects
    */
-  private filterActiveCategoryAssociations(
-    associations: IPromotionApplicableCategory[],
-    requireIncludeChildren: boolean,
-  ): PromotionApplicableCategory[] {
+  private filterActiveCategoryAssociations({
+    associations,
+    requireIncludeChildren,
+  }: {
+    associations: IPromotionApplicableCategory[];
+    requireIncludeChildren: boolean;
+  }): PromotionApplicableCategory[] {
     return associations
       .map((association) => this.toPromotionApplicableCategory(association))
       .filter((association) => {
@@ -360,17 +420,28 @@ export class GetCatalogProductsUseCase {
   /**
    * Apply category promotions to a catalog product
    */
-  private async applyCategoryPromotions(
-    catalogProduct: CatalogProduct,
-    activeAssociations: PromotionApplicableCategory[],
-    promotionCache: Map<string, IPromotion>,
-    promotionRulesCache: Map<string, IPromotionRule[]>,
-  ): Promise<void> {
+  private async applyCategoryPromotions({
+    catalogProduct,
+    activeAssociations,
+    promotionCache,
+    promotionRulesCache,
+  }: {
+    catalogProduct: CatalogProduct;
+    activeAssociations: PromotionApplicableCategory[];
+    promotionCache: Map<string, IPromotion>;
+    promotionRulesCache: Map<string, IPromotionRule[]>;
+  }): Promise<void> {
     for (const association of activeAssociations) {
-      const promotion = await this.getPromotion(association.promotionId, promotionCache);
+      const promotion = await this.getPromotion({
+        promotionId: association.promotionId,
+        cache: promotionCache,
+      });
       if (!promotion) continue;
 
-      const rules = await this.getPromotionRules(association.promotionId, promotionRulesCache);
+      const rules = await this.getPromotionRules({
+        promotionId: association.promotionId,
+        cache: promotionRulesCache,
+      });
 
       catalogProduct.evaluatePromotion({
         promotion,
@@ -390,7 +461,13 @@ export class GetCatalogProductsUseCase {
   /**
    * Get category with caching support
    */
-  public async getCategory(categoryId: string, cache: Map<string, ICategory | null>): Promise<ICategory | null> {
+  public async getCategory({
+    categoryId,
+    cache,
+  }: {
+    categoryId: string;
+    cache: Map<string, ICategory | null>;
+  }): Promise<ICategory | null> {
     if (cache.has(categoryId)) {
       return cache.get(categoryId) ?? null;
     }
@@ -405,7 +482,13 @@ export class GetCatalogProductsUseCase {
   /**
    * Get promotion with caching support
    */
-  public async getPromotion(promotionId: PromotionId, cache: Map<string, IPromotion>): Promise<IPromotion | undefined> {
+  public async getPromotion({
+    promotionId,
+    cache,
+  }: {
+    promotionId: PromotionId;
+    cache: Map<string, IPromotion>;
+  }): Promise<IPromotion | undefined> {
     const key = String(promotionId);
     if (cache.has(key)) {
       return cache.get(key);
@@ -422,10 +505,13 @@ export class GetCatalogProductsUseCase {
   /**
    * Get promotion rules with caching support
    */
-  public async getPromotionRules(
-    promotionId: PromotionId,
-    cache: Map<string, IPromotionRule[]>,
-  ): Promise<IPromotionRule[]> {
+  public async getPromotionRules({
+    promotionId,
+    cache,
+  }: {
+    promotionId: PromotionId;
+    cache: Map<string, IPromotionRule[]>;
+  }): Promise<IPromotionRule[]> {
     const key = String(promotionId);
     if (cache.has(key)) {
       return cache.get(key) ?? [];
@@ -442,10 +528,13 @@ export class GetCatalogProductsUseCase {
   /**
    * Get promotion applicable categories with caching support
    */
-  public async getPromotionApplicableCategories(
-    categoryId: string,
-    cache: Map<string, IPromotionApplicableCategory[]>,
-  ): Promise<IPromotionApplicableCategory[]> {
+  public async getPromotionApplicableCategories({
+    categoryId,
+    cache,
+  }: {
+    categoryId: string;
+    cache: Map<string, IPromotionApplicableCategory[]>;
+  }): Promise<IPromotionApplicableCategory[]> {
     if (cache.has(categoryId)) {
       return cache.get(categoryId) ?? [];
     }
