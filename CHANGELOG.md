@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.2](https://github.com/nathakritbc/promi-codelab-api/compare/v1.2.1...v1.2.2) (2025-10-06)
+
+### Code Refactoring
+
+* 💡 Remove canBeModified method and related exception handling from promotion logic ([aa43a02](https://github.com/nathakritbc/promi-codelab-api/commit/aa43a02d373cd89203bd9052fd330f4f2fd204a3))
+* 💡 Simplify conditional statements in GetCatalogProductsUseCase ([c3da5e8](https://github.com/nathakritbc/promi-codelab-api/commit/c3da5e8bae6c862f9b83db7df7a1b6a84111a5f8))
+* 💡 Simplify method visibility and control flow in CatalogProduct domain ([cfa9e27](https://github.com/nathakritbc/promi-codelab-api/commit/cfa9e27b1e69dce90924175c74b4c895fb5d1ea3))
+* 💡 Simplify product processing in GetCatalogProductsUseCase ([3540224](https://github.com/nathakritbc/promi-codelab-api/commit/3540224bab07ad845aa11840c519220be3dab0b8))
+* 💡 Update method signatures in GetCatalogProductsUseCase for improved clarity ([2da145e](https://github.com/nathakritbc/promi-codelab-api/commit/2da145e6dcfc08b33fcc2e276b49e8e5c4020641))
+* 💡 Update product processing methods to use IProduct type ([41c3080](https://github.com/nathakritbc/promi-codelab-api/commit/41c3080c34df579067033fa7c68b7548fc976a1b))
+
 ## [1.2.1](https://github.com/nathakritbc/promi-codelab-api/compare/v1.2.0...v1.2.1) (2025-10-04)
 
 ### Code Refactoring
