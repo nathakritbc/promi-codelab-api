@@ -74,28 +74,24 @@ export class CatalogProduct {
     return new CatalogProduct(product);
   }
 
-  getProduct(): Product {
+  public getProduct(): Product {
     return this.product;
   }
 
-  evaluatePromotion(payload: PromotionEvaluationPayload): void {
+  public evaluatePromotion(payload: PromotionEvaluationPayload): void {
     const promotion = CatalogProduct.instantiatePromotion(payload.promotion);
     const quantity = payload.quantity ?? 1;
     const unitPrice = Number(this.product.price as ProductPrice);
     const amount = payload.amountOverride ?? unitPrice;
 
-    if (!promotion.isActive()) {
-      return;
-    }
+    if (!promotion.isActive()) return;
 
     if (!CatalogProduct.areRulesApplicable(payload.rules || [], quantity, amount)) {
       return;
     }
 
     const discountAmount = promotion.calculateDiscount(amount);
-    if (discountAmount <= 0) {
-      return;
-    }
+    if (discountAmount <= 0) return;
 
     const finalPrice = Math.max(amount - discountAmount, 0);
 
@@ -111,9 +107,7 @@ export class CatalogProduct {
 
     if (existingIndex >= 0) {
       const existingOffer = this.offers[existingIndex];
-      if (existingOffer.discountAmount >= offer.discountAmount) {
-        return;
-      }
+      if (existingOffer.discountAmount >= offer.discountAmount) return;
       this.offers[existingIndex] = offer;
       return;
     }
@@ -121,7 +115,7 @@ export class CatalogProduct {
     this.offers.push(offer);
   }
 
-  getApplicablePromotions(): PromotionOfferSnapshot[] {
+  public getApplicablePromotions(): PromotionOfferSnapshot[] {
     return this.offers
       .slice()
       .sort((a, b) => {
@@ -136,23 +130,23 @@ export class CatalogProduct {
       .map((offer) => CatalogProduct.offerToSnapshot(offer));
   }
 
-  getBestPromotion(): PromotionOfferSnapshot | undefined {
+  public getBestPromotion(): PromotionOfferSnapshot | undefined {
     return this.getApplicablePromotions()[0];
   }
 
-  getBasePrice(): number {
+  public getBasePrice(): number {
     return Number(this.product.price as ProductPrice);
   }
 
-  getFinalPrice(): number {
+  public getFinalPrice(): number {
     return this.getBestPromotion()?.finalPrice ?? this.getBasePrice();
   }
 
-  getDiscountAmount(): number {
+  public getDiscountAmount(): number {
     return this.getBestPromotion()?.discountAmount ?? 0;
   }
 
-  toSnapshot(): CatalogProductSnapshot {
+  public toSnapshot(): CatalogProductSnapshot {
     const price = this.getBasePrice() as ProductPrice;
     const product = {
       uuid: this.product.uuid,
@@ -174,33 +168,25 @@ export class CatalogProduct {
   }
 
   private static instantiateProduct(product: IProduct | Product): Product {
-    if (product instanceof Product) {
-      return product;
-    }
+    if (product instanceof Product) return product;
 
     return Object.assign(new Product(), product);
   }
 
   private static instantiatePromotion(promotion: IPromotion | Promotion): Promotion {
-    if (promotion instanceof Promotion) {
-      return promotion;
-    }
+    if (promotion instanceof Promotion) return promotion;
 
     return Object.assign(new Promotion(), promotion);
   }
 
   private static instantiatePromotionRule(rule: IPromotionRule | PromotionRule): PromotionRule {
-    if (rule instanceof PromotionRule) {
-      return rule;
-    }
+    if (rule instanceof PromotionRule) return rule;
 
     return Object.assign(new PromotionRule(), rule);
   }
 
   private static areRulesApplicable(rules: IPromotionRule[], quantity: number, amount: number): boolean {
-    if (!rules.length) {
-      return true;
-    }
+    if (!rules.length) return true;
 
     return rules.every((rule) => CatalogProduct.instantiatePromotionRule(rule).isApplicable(quantity, amount));
   }
