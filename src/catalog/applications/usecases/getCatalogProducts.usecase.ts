@@ -90,7 +90,7 @@ export class GetCatalogProductsUseCase {
     const { result: products, meta } = await this.productRepository.getAllProducts(query);
 
     const caches = this.initializeCaches();
-    const catalogResults = await this.processProducts(products, caches);
+    const catalogResults = await this.processProducts({ products, caches });
 
     return StrictBuilder<GetCatalogProductsReturnType>().result(catalogResults).meta(meta).build();
   }
@@ -110,7 +110,13 @@ export class GetCatalogProductsUseCase {
   /**
    * Process all products and apply promotions
    */
-  private async processProducts(products: IProduct[], caches: CacheCollections): Promise<CatalogProductSnapshot[]> {
+  private async processProducts({
+    products,
+    caches,
+  }: {
+    products: IProduct[];
+    caches: CacheCollections;
+  }): Promise<CatalogProductSnapshot[]> {
     return Promise.all(products.map((product) => this.processSingleProduct({ product, caches })));
   }
 
