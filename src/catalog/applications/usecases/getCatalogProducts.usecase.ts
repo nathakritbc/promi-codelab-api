@@ -10,6 +10,7 @@ import {
 } from 'src/product-categories/applications/domains/productCategory.domain';
 import type { ProductCategoryRepository } from 'src/product-categories/applications/ports/productCategory.repository';
 import { productCategoryRepositoryToken } from 'src/product-categories/applications/ports/productCategory.repository';
+import { IProduct } from 'src/products/applications/domains/product.domain';
 import type { ProductRepository } from 'src/products/applications/ports/product.repository';
 import { GetAllProductsQuery, productRepositoryToken } from 'src/products/applications/ports/product.repository';
 import {
@@ -109,7 +110,7 @@ export class GetCatalogProductsUseCase {
   /**
    * Process all products and apply promotions
    */
-  private async processProducts(products: any[], caches: CacheCollections): Promise<CatalogProductSnapshot[]> {
+  private async processProducts(products: IProduct[], caches: CacheCollections): Promise<CatalogProductSnapshot[]> {
     const catalogResults: CatalogProductSnapshot[] = [];
 
     for (const product of products) {
@@ -123,7 +124,7 @@ export class GetCatalogProductsUseCase {
   /**
    * Process a single product: create catalog product and apply all promotions
    */
-  private async processSingleProduct(product: any, caches: CacheCollections): Promise<CatalogProductSnapshot> {
+  private async processSingleProduct(product: IProduct, caches: CacheCollections): Promise<CatalogProductSnapshot> {
     const catalogProduct = CatalogProduct.from(product);
 
     // Apply product-specific promotions
