@@ -111,14 +111,7 @@ export class GetCatalogProductsUseCase {
    * Process all products and apply promotions
    */
   private async processProducts(products: IProduct[], caches: CacheCollections): Promise<CatalogProductSnapshot[]> {
-    const catalogResults: CatalogProductSnapshot[] = [];
-
-    for (const product of products) {
-      const catalogProduct = await this.processSingleProduct({ product, caches });
-      catalogResults.push(catalogProduct);
-    }
-
-    return catalogResults;
+    return Promise.all(products.map((product) => this.processSingleProduct({ product, caches })));
   }
 
   /**
