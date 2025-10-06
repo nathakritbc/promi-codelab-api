@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.3](https://github.com/nathakritbc/promi-codelab-api/compare/v1.2.2...v1.2.3) (2025-10-06)
+
+### Code Refactoring
+
+* 💡 Improve promotion rule logic and tests for clarity ([013dd1f](https://github.com/nathakritbc/promi-codelab-api/commit/013dd1f146ad77a821614662bc495134e77ae906))
+* 💡 Remove limit query parameter from CatalogController ([7f127cd](https://github.com/nathakritbc/promi-codelab-api/commit/7f127cdaecbffa6b09863928552f72bcfde972a4))
+* 💡 Update processProducts method signature in GetCatalogProductsUseCase ([d56ad8d](https://github.com/nathakritbc/promi-codelab-api/commit/d56ad8d997e704887a1552467347b81b17be5067))
+
 ## [1.2.2](https://github.com/nathakritbc/promi-codelab-api/compare/v1.2.1...v1.2.2) (2025-10-06)
 
 ### Code Refactoring
