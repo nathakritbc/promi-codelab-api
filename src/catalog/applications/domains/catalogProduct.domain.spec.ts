@@ -100,6 +100,28 @@ describe('CatalogProduct domain', () => {
     expect(snapshot.finalPrice).toBe(1000);
   });
 
+  it('should not apply promotion when discount amount is less than or equal to 0', () => {
+    // Arrange
+    const product = createTestProduct();
+    const promotion = createPromotion({
+      discountValue: 0 as PromotionDiscountValue,
+    });
+
+    const catalogProduct = new CatalogProduct(product);
+
+    // Act
+    catalogProduct.evaluatePromotion({
+      promotion,
+      source: EPromotionOfferSource.PRODUCT,
+    });
+
+    // Assert
+    const snapshot = catalogProduct.toSnapshot();
+    expect(snapshot.appliedPromotion).toBeUndefined();
+    expect(snapshot.finalPrice).toBe(1000);
+    expect(snapshot.discountAmount).toBe(0);
+  });
+
   it('should respect promotion rules', () => {
     const product = createTestProduct();
     const promotion = createPromotion();
