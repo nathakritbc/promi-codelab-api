@@ -1,6 +1,6 @@
 {
   "name": "promi-codelab-api",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "NestJS Hexagonal Architecture TypeORM Project",
   "author": "Nathakrit Tato",
   "private": true,
