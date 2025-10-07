@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.4](https://github.com/nathakritbc/promi-codelab-api/compare/v1.2.3...v1.2.4) (2025-10-07)
+
+### Code Refactoring
+
+* 💡 Enhance promotion handling in CatalogProduct domain ([66d767f](https://github.com/nathakritbc/promi-codelab-api/commit/66d767f120b8e71946e829373bb00b1b3309ec58))
+
 ## [1.2.3](https://github.com/nathakritbc/promi-codelab-api/compare/v1.2.2...v1.2.3) (2025-10-06)
 
 ### Code Refactoring
