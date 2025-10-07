@@ -103,8 +103,10 @@ export class CatalogProduct {
       finalPrice,
     };
 
+    //ค้นหา promotion ใน offers ว่ามีเเล้วหรือยัง
     const existingIndex = this.offers.findIndex((item) => item.promotion.uuid === promotion.uuid);
 
+    //ถ้ามี ก็เอามาเทียบกันว่า ส่วนลดที่มีอยู่กับ ส่วนลดใหม่ คือไหนดีกว่า เเล้วเอาตัวส่วนลดใหม่ ไป replace ตัวที่มีอยู่ เพื่อได้ส่วนลดที่ดีที่สุด
     if (existingIndex >= 0) {
       const existingOffer = this.offers[existingIndex];
       if (existingOffer.discountAmount >= offer.discountAmount) return;
